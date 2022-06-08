@@ -1,0 +1,18 @@
+{
+    "version": "0.2.0",
+    "configurations": [        
+        {
+            "type": "cortex-debug",
+            "request": "launch",
+            "servertype": "openocd",
+            "cwd": "${workspaceRoot}",
+            "executable": "./build/bin/blinking_freertos.elf",
+            "name": "Debug (OpenOCD)",
+            "configFiles": [
+                "./externals/base/soc/lpc43xx/openocd/lpc4337_new.cfg"
+            ],
+            // "svdFile": "${workspaceFolder}/scripts/openocd/LPC43xx_43Sxx.svd",
+        }
+    ],
+    "compounds": []
+}

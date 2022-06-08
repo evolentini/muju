@@ -1,14 +1,8 @@
 ###############################################################################
 #
-# Copyright 2014, Mariano Cerdeiro
-# Copyright 2014, 2015, Juan Cecconi (UTN-FRBA)
-# Copyright 2015, Esteban Volentini (LabMicro, UNT)
-# Copyright 2014, ACSE & CADIEEL
-#    ACSE   : http://www.sase.com.ar/asociacion-civil-sistemas-embebidos/ciaa/
-#    CADIEEL: http://www.cadieel.org.ar
-# All rights reserved
+# Copyright 2022, Esteban Volentini - Facet UNT
 #
-# This file is part of CIAA Firmware.
+# All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are met:
@@ -53,12 +47,11 @@ GDB = gdb
 # ??
 NM = nm
 
-# Preprosesor flags
-PFLAGS = -DBOARD=$(BOARD) -DARCH=$(ARCH) -DCPU=$(CPU)
+# Preprocesor definitions
+DEFINES += BOARD=$(BOARD) CPU=$(CPU) SOC=$(SOC)
 
 # Compiler flags
 CFLAGS += -c -Wall -ggdb3 -fdata-sections -ffunction-sections
-CFLAGS += -DBOARD=$(BOARD) -DARCH=$(ARCH) -DCPU=$(CPU)
 
 # Library builder flags
 AFLAGS += -ggdb3

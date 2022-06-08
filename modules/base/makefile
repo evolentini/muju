@@ -3,7 +3,13 @@ include externals/gmsl/gmsl
 ###############################################################################
 # Function to generate the compilation parameters with the list of include paths
 define include_directories
-    $(foreach file,$1,-I $(file))
+    $(foreach file,$(sort $1 $(PROJECT_INC)),-I $(file))
+endef
+
+###############################################################################
+# Function to generate the compilation parameters with the list of include paths
+define defines_list
+    $(foreach define,$(DEFINES),-D $(define))
 endef
 
 ###############################################################################
@@ -19,31 +25,24 @@ define objects_list
 endef
 
 ###############################################################################
-# Dynamic rule to create a directory in output structu
-define create_directory_rule
-    $(info Definiendo regla para crear la carpeta $1 en $2)
-$1: $2
-	@echo ===============================================================================
-	@echo Creando directorio $$@
-	-@mkdir -p $$@
-endef
-
-###############################################################################
 # Dynamic rule to compile single folder with c source files
 define c_compiler_rule
-    $(info Definiendo regla de compilacion para $1 en $(OBJ_DIR)/$1)
-$(OBJ_DIR)/$1/%.o: $(OBJ_DIR)/$1 $1/%.c
+    $(info Definiendo regla de compilacion para $1/*.c en $(OBJ_DIR)/$1)
+$(OBJ_DIR)/$1/%.o: $1/%.c
 	@echo ===============================================================================
-	$(CC) $(strip $(CFLAGS) $(call include_directories,$2)) -MMD -c $$(word 2,$$^) -o $$@
+	-@mkdir -p $$(@D)
+	@echo $1
+	$$(CC) $$(strip $$(CFLAGS) $$(call defines_list) $$(call include_directories,$2)) -MMD -c $$< -o $$@
 endef
 
 ###############################################################################
 # Dynamic rule to compile single folder with s source files
 define assembler_rule
-    $(info Definiendo regla de compilacion para $1 en $(OBJ_DIR)/$1)
-$(OBJ_DIR)/$1/%.o: $(OBJ_DIR)/$1 $1/%.s
+    $(info Definiendo regla de compilacion para $1/*.s en $(OBJ_DIR)/$1)
+$(OBJ_DIR)/$1/%.o: $1/%.s
 	@echo ===============================================================================
-	$(CC) $(strip $(CFLAGS) $(call include_directories,$2)) -MMD -c $$(word 2,$$^) -o $$@
+	-@mkdir -p $$(@D)
+	$$(CC) $$(strip $$(CFLAGS) $$(call defines_list) $$(call include_directories,$2)) -MMD -c $$< -o $$@
 endef
 
 ###############################################################################
@@ -51,9 +50,10 @@ endef
 define library_link_rule
     $(info Definiendo regla de enlazar $(LIB_DIR)/$1.a)
 PROJECT_LIB += $(LIB_DIR)/$1.a
-$(LIB_DIR)/$1.a: $(dir $(LIB_DIR)/$1.a) $$($2_OBJ)
+$(LIB_DIR)/$1.a: $$($2_OBJ)
 	@echo ===============================================================================
-	$(AR) rcs $$@ $$(filter %.o,$$^)
+	-@mkdir -p $$(@D)
+	$$(AR) rcs $$@ $$^
 endef
 
 ###############################################################################
@@ -82,26 +82,13 @@ define analize_path
 endef
 
 ###############################################################################
-# Procedure to create a dynamic rules to build folder for static library file if its necesary
-define define_library_folder_rule
-    $(if $(findstring $1,$(DEFINED_FOLDERS)), \
-        $(info Ya existe una regla definida para crear el directorio $1) \
-    , \
-        $(info Definiendo una nueva regla para crear el directorio $1) \
-        $(eval DEFINED_FOLDERS += $1)
-        $(eval $(call create_directory_rule,$1,$2)) \
-    )
-endef
-
-###############################################################################
 # Procedure to create dynamic rules to build a static library from module with source code
 define define_library_rules
-    $(eval NAME = $(call uc,$(subst /,_,$1)))
+    $(eval NAME = $(if $2,$2,$(call uc,$(subst /,_,$1))))
     $(eval $(call analize_path,$1,$(NAME)))
     $(if $($(NAME)_SRC), \
-        $(eval $(NAME)_OBJ = $$(call objects_list,$$($(NAME)_SRC),c,$1)) \
+        $(eval $(NAME)_OBJ += $$(call objects_list,$$($(NAME)_SRC),c,$1)) \
         $(eval PROJECT_INC += $$($(NAME)_INC)) \
-        $(eval $(call define_library_folder_rule,$(dir $(LIB_DIR)/$1.a),$(LIB_DIR))) \
         $(eval $(call define_compilation_rules,$(NAME))) \
         $(eval $(call library_link_rule,$1,$(NAME))) \
         $(eval -include $(patsubst %.o,%.d,$($(NAME)_OBJ))) \
@@ -156,13 +143,20 @@ endif
 
 ###############################################################################
 #
+
+-include boards/$(BOARD)/makefile
+
 export BOARD
 export CPU
 export SOC
 
-MODULES += boards/$(BOARD)/makefile
-MODULES += modules/base/cpu/$(CPU) modules/base/soc/$(SOC)
-MODULES += externals/base/cpu/$(CPU) externals/base/soc/$(SOC)
+CPU_PATHS = modules/base/cpu/$(CPU) externals/base/cpu/$(CPU)
+SOC_PATHS = modules/base/soc/$(SOC) externals/base/soc/$(SOC)
+
+CPU_INC = $(foreach path,$(CPU_PATHS),$($(call uc,$(subst /,_,$(path)))_INC))
+SOC_INC = $(foreach path,$(SOC_PATHS),$($(call uc,$(subst /,_,$(path)))_INC))
+
+MODULES += boards/$(BOARD) $(CPU_PATHS) $(SOC_PATHS)
 
 ###############################################################################
 # 
@@ -175,8 +169,9 @@ LD_TARGET = $(TARGET_NAME).$(LD_EXTENSION)
 
 PROJECT_OBJ += $(call objects_list,$(PROJECT_SRC),c)
 $(eval $(call define_compilation_rules,PROJECT))
-$(PROJECT_NAME): $(BIN_DIR) $(PROJECT_LIB) $(PROJECT_OBJ) 
+$(PROJECT_NAME): $(PROJECT_LIB) $(PROJECT_OBJ) 
 	@echo ===============================================================================
+	-@mkdir -p $(BIN_DIR)
 	$(CC) $(strip $(LFLAGS) $(PROJECT_OBJ) $(PROJECT_LIB) $(LIB_PARAMS)) -o $(LD_TARGET) 
 	@echo ' '
 
@@ -184,10 +179,17 @@ $(PROJECT_NAME): $(BIN_DIR) $(PROJECT_LIB) $(PROJECT_OBJ)
 
 ###############################################################################
 # 
-clean: $(BUILD_DIR)
+clean:
 	-@rm -r $(BUILD_DIR)
 
+NAMES = $(foreach path,$(CPU_PATHS),$(call uc,$(subst /,_,$(path)))_INC)
+DEBUG = $(foreach path,$(CPU_PATHS),$($(call uc,$(subst /,_,$(path)))_INC))
 info:
 	@echo Proyecto: $(PROJECT)
 	@echo Modulos: $(MODULES)
 	@echo Placa: $(BOARD), $(CPU), $(SOC)
+	@echo Debug: $(DEBUG)
+	@echo Values: $(NAMES)
+	@echo Rutas con cabeceras del CPU: $(CPU_INC)
+	@echo Rutas con cabeceras del SOC: $(SOC_INC)
+	@echo Demo: $(EXTERNALS_BASE_CPU_ARM-THUMB_INC)
