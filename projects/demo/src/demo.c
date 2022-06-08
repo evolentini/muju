@@ -53,8 +53,7 @@
 /* === Inclusiones de cabeceras ============================================ */
 #include "FreeRTOS.h"
 #include "task.h"
-#include "board.h"
-#include "digital.h"
+#include "hal.h"
 #include <stdbool.h>
 
 /* === Definicion y Macros ================================================= */
@@ -68,7 +67,7 @@
  ** @parameter[in] parametros Puntero a una estructura que contiene el led
  **                           y la demora entre encendido y apagado.
  */ 
-void Blinking(void * parametros);
+void Blinking(void * paramparametersetros);
 
 /* === Definiciones de variables internas ================================== */
 
@@ -76,13 +75,43 @@ void Blinking(void * parametros);
 
 /* === Definiciones de funciones internas ================================== */
 
-void Blinking(void * parametros) {
-   digital_output_t led = DigitalOutputCreate(TEST_LED_GPIO, TEST_LED_BIT);
+void Blinking(void * parameters) {
+   digital_output_t led = DigitalOutputCreate(BLINKING_LED, 
+      &(const struct digital_output_atributes_s) {
+         .inverted = true,
+      }
+   );
+   
    while(true) {
       DigitalOuputToggle(led);
       vTaskDelay(pdMS_TO_TICKS(500));
    }
 }
+
+void Touch(void * parameters) {
+   digital_output_t led = DigitalOutputCreate(TOUCH_LED,
+      &(const struct digital_output_atributes_s) {}
+   );
+   digital_input_t key = DigitalInputCreate(TOUCH_KEY,
+      &(const struct digital_input_atributes_s) {
+         .inverted = true,
+         .pullup = true,
+      }
+   );
+
+   bool state = false;
+   bool presed = false;
+
+   while(true) {
+      presed = DigitalInputGetState(key);
+      if (presed != state) {
+         DigitalOuputSetState(led, presed);
+      }
+      state = presed;
+      vTaskDelay(pdMS_TO_TICKS(150));
+   }
+}
+
 /* === Definiciones de funciones externas ================================== */
 
 /** @brief Función principal del programa
@@ -94,10 +123,11 @@ void Blinking(void * parametros) {
  */
 int main(void) {
    /* Inicializaciones y configuraciones de dispositivos */
-   BoardInit();
+   HalBoardInit();
 
    /* Creación de las tareas */
-   xTaskCreate(Blinking, "Azul", configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY + 1, NULL);
+   xTaskCreate(Blinking, "Blinking", configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY + 1, NULL);
+   xTaskCreate(Touch, "Touch", configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY + 2, NULL);
 
    /* Arranque del sistema operativo */
    vTaskStartScheduler();

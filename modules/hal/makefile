@@ -5,9 +5,9 @@ FOLDER = modules/hal
 $(eval NAME = $(call uc,$(subst /,_,$(FOLDER))))
 
 # Variable with the list of folders containing header files for the module
-$(NAME)_INC = $(FOLDER)/inc
+$(NAME)_INC = $(FOLDER)/inc $(FOLDER)/soc/inc
 
 # Variable with the list of folders containing source files for the module
-$(NAME)_SRC = $(FOLDER)/soc/$(SOC)
+$(NAME)_SRC = $(FOLDER)/src $(FOLDER)/soc/$(SOC)
 
 PROJECT_INC += modules/hal/inc

@@ -32,60 +32,44 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-/** \brief Digital inputs/outputs definitions
+#ifndef TERMINAL_H
+#define TERMINAL_H
+
+/** \brief Digital inputs/outputs declarations
  **
  ** \addtogroup hal HAL
  ** \brief Hardware abstraction layer
  ** @{ */
 
-/* === Headers files inclusions =============================================================== */
+/* === Headers files inclusions ================================================================ */
 
-#include "digital.h"
-#include "chip.h"
+#include <stdint.h>
 
-/* === Macros definitions ====================================================================== */
+/* === Cabecera C++ ============================================================================ */
 
-/* === Private data type declarations ========================================================== */
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-struct digital_output_s {
-    uint8_t gpio;
-    uint8_t bit;
-};
+/* === Public macros definitions =============================================================== */
+ 
+/* === Public data type declarations =========================================================== */
 
-/* === Private variable declarations =========================================================== */
+typedef struct terminal_s {
+    uint8_t port;
+    uint8_t pin;
+} const * terminal_t;
 
-/* === Private function declarations =========================================================== */
+/* === Public variable declarations ============================================================ */
 
-digital_output_t DigitalOutputCreate(void);
-
-/* === Public variable definitions ============================================================= */
-
-/* === Private variable definitions ============================================================ */
-
-/* === Private function implementation ========================================================= */
-
-digital_output_t DigitalOutputCreate(void) {
-    static struct digital_output_s self[1];
-    return self;
-}
-
-/* === Public function implementation ========================================================= */
-
-digital_output_t DigitalOutputInit(uint8_t port, uint8_t bit) {
-    digital_output_t self = DigitalOutputCreate();
-    
-    if (self) {
-        self->gpio = port;
-        self->bit = bit;
-    }
-
-    return self;
-}
-
-void DigitalOuputToggle(digital_output_t self) {
-    Chip_GPIO_SetPinToggle(LPC_GPIO_PORT, self->gpio, self->bit);
-}
+/* === Public function declarations ============================================================ */
 
 /* === End of documentation ==================================================================== */
 
+#ifdef __cplusplus
+}
+#endif
+
 /** @} End of module definition for doxygen */
+
+#endif   /* TERMINAL_H */

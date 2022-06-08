@@ -6,7 +6,7 @@
             "request": "launch",
             "servertype": "openocd",
             "cwd": "${workspaceRoot}",
-            "executable": "./build/bin/blinking_freertos.elf",
+            "executable": "./build/bin/demo.elf",
             "name": "Debug (OpenOCD)",
             "configFiles": [
                 "./externals/base/soc/lpc43xx/openocd/lpc4337_new.cfg"

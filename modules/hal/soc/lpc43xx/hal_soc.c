@@ -40,25 +40,16 @@
 
 /* === Headers files inclusions =============================================================== */
 
-#include "digital.h"
-#include <stdbool.h>
-#include <stdio.h>
+#include "hal_soc.h"
+#include "board.h"
 
 /* === Macros definitions ====================================================================== */
 
 /* === Private data type declarations ========================================================== */
 
-struct digital_output_s {
-    uint8_t gpio;
-    uint8_t bit;
-    bool state;
-};
-
 /* === Private variable declarations =========================================================== */
 
 /* === Private function declarations =========================================================== */
-
-digital_output_t DigitalOutputCreate(void);
 
 /* === Public variable definitions ============================================================= */
 
@@ -66,29 +57,22 @@ digital_output_t DigitalOutputCreate(void);
 
 /* === Private function implementation ========================================================= */
 
-digital_output_t DigitalOutputCreate(void) {
-    static struct digital_output_s self[1];
-    return self;
-}
-
 /* === Public function implementation ========================================================= */
 
-digital_output_t DigitalOutputInit(uint8_t port, uint8_t bit) {
-    digital_output_t self = DigitalOutputCreate();
-    
-    if (self) {
-        self->gpio = port;
-        self->bit = bit;
-        self->state = 0;
-    }
+void HalBoardInit(void) {
+    BoardInit();
+} 
 
-    return self;
+bool HalDigitalGetState(uint8_t port, uint8_t pin) {
+    return Chip_GPIO_ReadPortBit(LPC_GPIO_PORT, port, pin);
 }
 
-void DigitalOuputToggle(digital_output_t self) {
-    static const char format[] = "Digital output %d of port %d has chaged its state, now are %s\r\n";
-    self->state = !self->state;
-    printf(format, self->bit, self->gpio, self->state ? "true" : "flase");
+void HalDigitalSetState(uint8_t port, uint8_t pin, bool state) {
+    Chip_GPIO_SetPinState(LPC_GPIO_PORT, port, pin, state);
+}
+
+void HalDigitalToggle(uint8_t port, uint8_t pin) {
+    Chip_GPIO_SetPinToggle(LPC_GPIO_PORT, port, pin);
 }
 
 /* === End of documentation ==================================================================== */

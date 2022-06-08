@@ -32,55 +32,59 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef BOARD_H
-#define BOARD_H
-
-/** \brief Posix emulated board specific declarations 
+/** \brief Digital inputs/outputs definitions
  **
- ** \addtogroup boards Boards
- ** \brief Board support
+ ** \addtogroup hal HAL
+ ** \brief Hardware abstraction layer
  ** @{ */
 
-/* === Headers files inclusions ================================================================ */
+/* === Headers files inclusions =============================================================== */
 
-#include <stdint.h>
+#include "hal_soc.h"
+#include "board.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+#include <sys/select.h>
+#include <termios.h>
 
-/* === Cabecera C++ ============================================================================ */
+/* === Macros definitions ====================================================================== */
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+/* === Private data type declarations ========================================================== */
 
-/* === Public macros definitions =============================================================== */
+/* === Private variable definitions ============================================================ */
 
-#define BLINKING_LED    &(const struct terminal_s){.port = 0, .pin = 0}
-#define TOUCH_LED       &(const struct terminal_s){.port = 1, .pin = 0}
-#define TOUCH_KEY       &(const struct terminal_s){.port = 1, .pin = 1}
+static bool states[8][32] = {0};
 
-/* === Public data type declarations =========================================================== */
- 
-/* === Public variable declarations ============================================================ */
+/* === Private function declarations =========================================================== */
 
-/* === Public function declarations ============================================================ */
+/* === Public variable definitions ============================================================= */
 
-/**
- * @brief Function to configure board devices
- */
-void BoardInit(void);
+/* === Private function implementation ========================================================= */
 
-/**
- * @brief 
- * 
- * @param value 
- */
-void DelayMs(uint32_t value);
+/* === Public function implementation ========================================================= */
+
+void HalBoardInit(void) {
+    BoardInit();
+
+} 
+
+bool HalDigitalGetState(uint8_t port, uint8_t pin) {
+    return states[port][pin];
+}
+
+void HalDigitalSetState(uint8_t port, uint8_t pin, bool state) {
+    static const char format[] = "Digital output %d of port %d has chaged its state, now are %s\r\n";
+
+    states[port][pin] = state;
+    printf(format, pin, port, state ? "true" : "flase");
+}
+
+void HalDigitalToggle(uint8_t port, uint8_t pin) {
+    HalDigitalSetState(port, pin, !HalDigitalGetState(port, pin));
+}
 
 /* === End of documentation ==================================================================== */
 
-#ifdef __cplusplus
-}
-#endif
-
 /** @} End of module definition for doxygen */
-
-#endif   /* BOARD_H */

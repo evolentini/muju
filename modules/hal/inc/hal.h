@@ -32,18 +32,19 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef BOARD_H
-#define BOARD_H
+#ifndef HAL_H
+#define HAL_H
 
-/** \brief Posix emulated board specific declarations 
+/** \brief Digital inputs/outputs declarations
  **
- ** \addtogroup boards Boards
- ** \brief Board support
+ ** \addtogroup hal HAL
+ ** \brief Hardware abstraction layer
  ** @{ */
 
 /* === Headers files inclusions ================================================================ */
 
-#include <stdint.h>
+#include "terminal.h"
+#include "digital.h"
 
 /* === Cabecera C++ ============================================================================ */
 
@@ -52,28 +53,15 @@ extern "C" {
 #endif
 
 /* === Public macros definitions =============================================================== */
-
-#define BLINKING_LED    &(const struct terminal_s){.port = 0, .pin = 0}
-#define TOUCH_LED       &(const struct terminal_s){.port = 1, .pin = 0}
-#define TOUCH_KEY       &(const struct terminal_s){.port = 1, .pin = 1}
-
-/* === Public data type declarations =========================================================== */
  
+/* === Public data type declarations =========================================================== */
+
+
 /* === Public variable declarations ============================================================ */
 
 /* === Public function declarations ============================================================ */
 
-/**
- * @brief Function to configure board devices
- */
-void BoardInit(void);
-
-/**
- * @brief 
- * 
- * @param value 
- */
-void DelayMs(uint32_t value);
+bool HalBoardInit();
 
 /* === End of documentation ==================================================================== */
 
@@ -83,4 +71,4 @@ void DelayMs(uint32_t value);
 
 /** @} End of module definition for doxygen */
 
-#endif   /* BOARD_H */
+#endif   /* HAL_H */

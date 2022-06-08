@@ -66,7 +66,7 @@ int main(void)
 {
     BoardInit();
 
-    digital_output_t led = DigitalOutputInit(TEST_LED_GPIO, TEST_LED_BIT);
+    digital_output_t led = DigitalOutputCreate(TEST_LED_GPIO, TEST_LED_BIT);
 
     while (true)
     {

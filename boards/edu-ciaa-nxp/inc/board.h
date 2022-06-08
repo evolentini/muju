@@ -152,8 +152,9 @@ extern "C" {
     #define BOARD_ADC_RESOLUTION    ADC_10BITS
 #endif
 
-#define TEST_LED_GPIO   5
-#define TEST_LED_BIT    2
+#define BLINKING_LED    &(const struct terminal_s){.port = 5, .pin = 2}
+#define TOUCH_LED       &(const struct terminal_s){.port = 1, .pin = 12}
+#define TOUCH_KEY       &(const struct terminal_s){.port = 1, .pin = 9}
 
 /* === Public data type declarations =========================================================== */
 
