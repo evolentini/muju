@@ -60,7 +60,7 @@ extern "C" {
 typedef struct digital_input_atributes_s {
     bool inverted:1;
     bool pullup:1;
-    bool puldown:1;
+    bool pulldown:1;
 } const * digital_input_atributes_t;
 
 //!
@@ -97,6 +97,12 @@ digital_input_t DigitalInputCreate(terminal_t terminal, digital_input_atributes_
  * @return false 
  */
 bool DigitalInputGetState(digital_input_t output);
+
+bool DigitalInputHasChanged(digital_input_t input);
+
+bool DigitalInputHasActivated(digital_input_t input);
+
+bool DigitalInputHasDeactivated(digital_input_t input);
 
 /**
  * @brief 

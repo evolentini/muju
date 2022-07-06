@@ -64,7 +64,8 @@
 
 struct digital_input_s {
     struct terminal_s terminal[1];
-    struct digital_input_atributes_s atributes[1];       
+    struct digital_input_atributes_s atributes[1];
+    bool last_state;
 #ifdef HAL_USE_STATIC_ALOCATION
     bool allocated;
 #endif
@@ -140,15 +141,50 @@ digital_input_t DigitalInputCreate(terminal_t terminal, digital_input_atributes_
     if (self) {
         memcpy(self->terminal, terminal, sizeof(struct terminal_s));
         memcpy(self->atributes, atributes, sizeof(struct digital_input_atributes_s));
+        self->last_state = DigitalInputGetState(self);
     }
 
     return self;
 }
 
-bool DigitalInputGetState(digital_input_t output) {
-    bool state = HalDigitalGetState(output->terminal->port, output->terminal->pin);
-    return (state ^ output->atributes->inverted);
+bool DigitalInputGetState(digital_input_t input) {
+    bool state = HalDigitalGetState(input->terminal->port, input->terminal->pin);
+    return (state ^ input->atributes->inverted);
 }
+
+bool DigitalInputHasChanged(digital_input_t input) {
+    bool result = false;
+
+    if (input) {
+        bool state = DigitalInputGetState(input);
+        result = state != input->last_state;
+        input->last_state = state;
+    }
+    return result;
+}
+
+bool DigitalInputHasActivated(digital_input_t input) {
+    bool result = false;
+
+    if (input) {
+        bool state = DigitalInputGetState(input);
+        result = state && !input->last_state;
+        input->last_state = state;
+    }
+    return result;
+}
+
+bool DigitalInputHasDeactivated(digital_input_t input) {
+    bool result = false;
+
+    if (input) {
+        bool state = DigitalInputGetState(input);
+        result = !state && !input->last_state;
+        input->last_state = state;
+    }
+    return result;
+}
+
 
 digital_output_t DigitalOutputCreate(terminal_t terminal, digital_output_atributes_t atributes) {
     digital_output_t self = DigitalOutputAllocate();
