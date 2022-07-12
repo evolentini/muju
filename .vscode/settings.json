@@ -1,6 +1,3 @@
 {
-    "files.associations": {
-        "terminal.h": "c",
-        "digital.h": "c"
-    }
+    "editor.formatOnSave": true,
 }

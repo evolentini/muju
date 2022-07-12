@@ -172,7 +172,8 @@ $(eval $(call define_compilation_rules,PROJECT))
 $(PROJECT_NAME): $(PROJECT_LIB) $(PROJECT_OBJ) 
 	@echo ===============================================================================
 	-@mkdir -p $(BIN_DIR)
-	$(CC) $(strip $(LFLAGS) $(PROJECT_OBJ) $(PROJECT_LIB) $(LIB_PARAMS)) -o $(LD_TARGET) 
+	$(CC) $(strip $(LFLAGS) $(PROJECT_OBJ) $(PROJECT_LIB) $(LIB_PARAMS)) -o $(LD_TARGET)
+	-@cp -f $(LD_TARGET) $(BIN_DIR)/project.$(LD_EXTENSION) 
 	@echo ' '
 
 .DEFAULT_GOAL := $(PROJECT_NAME)

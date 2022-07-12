@@ -1,12 +1,12 @@
 {
     "version": "0.2.0",
-    "configurations": [        
+    "configurations": [
         {
             "type": "cortex-debug",
             "request": "launch",
             "servertype": "openocd",
             "cwd": "${workspaceRoot}",
-            "executable": "./build/bin/demo.elf",
+            "executable": "./build/bin/project.elf",
             "name": "Debug (OpenOCD)",
             "configFiles": [
                 "./externals/base/soc/lpc43xx/openocd/lpc4337_new.cfg"
