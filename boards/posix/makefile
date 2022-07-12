@@ -46,3 +46,5 @@ $(NAME)_INC := $(FOLDER)/inc
 
 # Variable with the list of folders containing source files for the module
 $(NAME)_SRC := $(FOLDER)/src
+
+LFLAGS = -lcurses

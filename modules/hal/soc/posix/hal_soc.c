@@ -44,10 +44,7 @@
 #include "board.h"
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
-#include <unistd.h>
-#include <sys/select.h>
-#include <termios.h>
+#include <curses.h>
 
 /* === Macros definitions ====================================================================== */
 
@@ -63,11 +60,31 @@ static bool states[8][32] = {0};
 
 /* === Private function implementation ========================================================= */
 
+void Mostrar(int fila, int columna, bool puerto[8]) {
+    const char * FORMATO = "B%d=%d";
+    const int ESPACIOS = 5;
+    for (int indice = 7; indice >= 0; indice--) {
+        mvprintw(fila, 5 * indice + columna, FORMATO, indice, puerto[indice] );
+    }
+}
+
 /* === Public function implementation ========================================================= */
 
 void HalBoardInit(void) {
-    BoardInit();
+    WINDOW * pantalla;
+    if ((pantalla = initscr()) == NULL ) {
+        fprintf(stderr, "Error al configurar ncurses.\n");
+        exit(EXIT_FAILURE);
+    }
 
+     // No mostrar lo que se escribe
+    noecho();
+    // Ocultar el cursor
+    curs_set(0);
+    // Esperar solo medio segundo por una tecla
+    timeout(100);
+
+    BoardInit();
 } 
 
 bool HalDigitalGetState(uint8_t port, uint8_t pin) {
@@ -79,6 +96,9 @@ void HalDigitalSetState(uint8_t port, uint8_t pin, bool state) {
 
     states[port][pin] = state;
     printf(format, pin, port, state ? "true" : "flase");
+
+    Mostrar(0, 2, states[0]);
+
 }
 
 void HalDigitalToggle(uint8_t port, uint8_t pin) {
