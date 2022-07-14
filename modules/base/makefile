@@ -27,19 +27,18 @@ endef
 ###############################################################################
 # Dynamic rule to compile single folder with c source files
 define c_compiler_rule
-    $(info Definiendo regla de compilacion para $1/*.c en $(OBJ_DIR)/$1)
-$(OBJ_DIR)/$1/%.o: $1/%.c
+    $(info Definiendo regla de compilacion para $1/*.c en $3)
+$3/%.o: $1/%.c
 	@echo ===============================================================================
 	-@mkdir -p $$(@D)
-	@echo $1
 	$$(CC) $$(strip $$(CFLAGS) $$(call defines_list) $$(call include_directories,$2)) -MMD -c $$< -o $$@
 endef
 
 ###############################################################################
 # Dynamic rule to compile single folder with s source files
 define assembler_rule
-    $(info Definiendo regla de compilacion para $1/*.s en $(OBJ_DIR)/$1)
-$(OBJ_DIR)/$1/%.o: $1/%.s
+    $(info Definiendo regla de compilacion para $1/*.s en $3)
+$3/%.o: $1/%.s
 	@echo ===============================================================================
 	-@mkdir -p $$(@D)
 	$$(CC) $$(strip $$(CFLAGS) $$(call defines_list) $$(call include_directories,$2)) -MMD -c $$< -o $$@
@@ -59,9 +58,8 @@ endef
 ###############################################################################
 # Procedure to create dynamic rules for a list of folders with source files
 define define_compilation_rules
-    $(foreach path, $($1_SRC),$(eval $(call create_directory_rule,$(OBJ_DIR)/$(path),$(OBJ_DIR))))
-    $(foreach path, $($1_SRC),$(eval $(call c_compiler_rule,$(path),$($1_INC),$(path))))
-    $(foreach path, $($1_SRC),$(eval $(call assembler_rule,$(path),$($1_INC),$(path))))
+    $(foreach path, $($1_SRC),$(eval $(call c_compiler_rule,$(path),$($1_INC),$(OBJ_DIR)/$(path))))
+    $(foreach path, $($1_SRC),$(eval $(call assembler_rule,$(path),$($1_INC),$(OBJ_DIR)/$(path))))
 endef
 
 ###############################################################################
@@ -110,13 +108,6 @@ BIN_DIR = $(BUILD_DIR)/bin
 GEN_DIR = $(BUILD_DIR)/gen
 # etc dir (configuration dir)
 ETC_DIR = $(BUILD_DIR)/etc
-
-BUILD_FOLDERS = obj lib bin
-
-DIR_LIST = OBJ_DIR LIB_DIR BIN_DIR GEN_DIR ETC_DIR
-
-$(eval $(call create_directory_rule,$(BUILD_DIR),$(ROOT_DIR)))
-$(foreach path,$(DIR_LIST),$(eval $(call create_directory_rule,$($(path)),$(BUILD_DIR))))
 
 ###############################################################################
 # Defintion of project name based on project paths if it was not defined in 
@@ -167,8 +158,13 @@ LD_TARGET = $(TARGET_NAME).$(LD_EXTENSION)
 
 -include $(patsubst %.o,%.d,$(PROJECT_OBJ))
 
+###############################################################################
 PROJECT_OBJ += $(call objects_list,$(PROJECT_SRC),c)
-$(eval $(call define_compilation_rules,PROJECT))
+PROJECT_OBJ := $(foreach path,$(PROJECT_OBJ),$(subst $(PROJECT),$(PROJECT_NAME),$(path)))
+$(foreach path, $(PROJECT_SRC),$(eval $(call c_compiler_rule,$(path),$($1_INC),$(subst $(PROJECT),$(OBJ_DIR)/$(PROJECT_NAME),$(path)))))
+$(foreach path, $(PROJECT_SRC),$(eval $(call assembler_rule,$(path),$($1_INC),$(subst $(PROJECT),$(OBJ_DIR)/$(PROJECT_NAME),$(path)))))
+
+###############################################################################
 $(PROJECT_NAME): $(PROJECT_LIB) $(PROJECT_OBJ) 
 	@echo ===============================================================================
 	-@mkdir -p $(BIN_DIR)
@@ -185,12 +181,16 @@ clean:
 
 NAMES = $(foreach path,$(CPU_PATHS),$(call uc,$(subst /,_,$(path)))_INC)
 DEBUG = $(foreach path,$(CPU_PATHS),$($(call uc,$(subst /,_,$(path)))_INC))
+DEBUG = $(foreach path,$(PROJECT_OBJ),$(patsubst $(PROJECT),$(OBJ_DIR)/%.o,$(path)))
+DEBUG = $(foreach path,$(PROJECT_OBJ),$(subst $(PROJECT),$(PROJECT_NAME),$(path)))
+
 info:
 	@echo Proyecto: $(PROJECT)
 	@echo Modulos: $(MODULES)
 	@echo Placa: $(BOARD), $(CPU), $(SOC)
 	@echo Debug: $(DEBUG)
 	@echo Values: $(NAMES)
+	@echo Objetos: $(PROJECT_OBJ)
 	@echo Rutas con cabeceras del CPU: $(CPU_INC)
 	@echo Rutas con cabeceras del SOC: $(SOC_INC)
 	@echo Demo: $(EXTERNALS_BASE_CPU_ARM-THUMB_INC)
