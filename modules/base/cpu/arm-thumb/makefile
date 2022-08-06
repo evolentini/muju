@@ -57,7 +57,7 @@ CFLAGS += -c -Wall -ggdb3 -fdata-sections -ffunction-sections -mthumb
 AFLAGS += -ggdb3 -mthumb
 
 # Linker flags
-LFLAGS += -T$(LINKSCRIPT) -fno-builtin -mthumb -Wl,-Map="$(TARGET_NAME).map",-gc-sections,--cref
+LFLAGS += -L $(MUJU) -T $(LINKSCRIPT) -fno-builtin -mthumb -Wl,-Map="$(TARGET_NAME).map",-gc-sections,--cref
 
 # Debugger flags
 # GDB_FLAGS = $(LD_TARGET) -ex "target remote localhost:3333"

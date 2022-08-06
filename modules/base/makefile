@@ -1,34 +1,78 @@
-include externals/gmsl/gmsl
+MUJU := $(abspath $(dir $(lastword $(MAKEFILE_LIST)))../..)
+include $(MUJU)/externals/gmsl/gmsl
+
+###############################################################################
+# Defintion of project name based on project paths if it was not defined in 
+# project makefile, used to define binary file and default target
+ifneq ($(PROJECT), )
+    -include $(PROJECT)/makefile
+    PROJECT_NAME ?= $(lastword $(subst /, , $(PROJECT)))
+else
+    PROJECT = .
+    PROJECT_NAME ?= $(lastword $(subst /, , $(CURDIR)))
+endif
+
+PROJECT_DIR = $(abspath $(PROJECT))
+
+###############################################################################
+# Function to generate the full path of directory
+define full_path
+$(strip \
+    $(if $(wildcard $(abspath $1)), $(abspath $1), \
+        $(if $(wildcard $(PROJECT_DIR)/$1),$(PROJECT_DIR)/$1,$(MUJU)/$1) \
+    )
+)
+endef
+
+###############################################################################
+# Function to generate the short path of directory 
+define short_path
+$(strip \
+    $(subst $(abspath $(MUJU))/,,$(subst $(abspath $(PROJECT_DIR))/,,$(abspath $1)))
+)
+endef
 
 ###############################################################################
 # Function to generate the compilation parameters with the list of include paths
 define include_directories
-    $(foreach file,$(sort $1 $(PROJECT_INC)),-I $(file))
+$(strip \
+    $(foreach path,$(sort $1 $(PROJECT_INC)),-I $(call full_path,$(path)))
+)
 endef
 
 ###############################################################################
 # Function to generate the compilation parameters with the list of include paths
 define defines_list
+$(strip \
     $(foreach define,$(DEFINES),-D $(define))
+)
 endef
 
 ###############################################################################
 # Function to obtain the last directory of a path
 define lastdir
+$(strip \
     $(strip $(lastword $(subst /, ,$1)))
+)
 endef
 
 ###############################################################################
 # Function to generate the list of object files from a path list
 define objects_list
-    $(foreach path,$1,$(patsubst $(path)/%.$2,$(OBJ_DIR)/$(path)/%.o,$(wildcard $(path)/*.$2)))
+$(strip \
+    $(foreach path,$1,
+        $(eval SOURCE_DIR = $(call full_path,$(path))) \
+        $(eval OBJECT_DIR = $(OBJ_DIR)/$(call short_path,$(path))) \
+        $(patsubst $(SOURCE_DIR)/%.$2,$(OBJECT_DIR)/%.o,$(wildcard $(SOURCE_DIR)/*.$2)) \
+    )
+)
 endef
 
 ###############################################################################
 # Dynamic rule to compile single folder with c source files
 define c_compiler_rule
     $(info Definiendo regla de compilacion para $1/*.c en $3)
-$3/%.o: $1/%.c
+$3/%.o: $(call full_path,$1)/%.c
 	@echo ===============================================================================
 	-@mkdir -p $$(@D)
 	$$(CC) $$(strip $$(CFLAGS) $$(call defines_list) $$(call include_directories,$2)) -MMD -c $$< -o $$@
@@ -38,7 +82,7 @@ endef
 # Dynamic rule to compile single folder with s source files
 define assembler_rule
     $(info Definiendo regla de compilacion para $1/*.s en $3)
-$3/%.o: $1/%.s
+$3/%.o: $(call full_path,$1)/%.s
 	@echo ===============================================================================
 	-@mkdir -p $$(@D)
 	$$(CC) $$(strip $$(CFLAGS) $$(call defines_list) $$(call include_directories,$2)) -MMD -c $$< -o $$@
@@ -65,16 +109,18 @@ endef
 ###############################################################################
 # Function to analize a path and include the module makefile if it exists
 define analize_path
+    $(eval path = $(call full_path,$1)) \
     $(info ---------------------------------------------------) \
-    $(if $(wildcard $1/makefile), \
-        $(info Incluyendo el makefile de la carpeta $1) \
-        $(eval include $1/makefile) \
+    $(info Analizando la carpeta $(path)) \
+    $(if $(wildcard $(path)/makefile), \
+        $(info Incluyendo el makefile de la carpeta $(path)) \
+        $(eval include $(path)/makefile) \
     , \
-        $(if $(wildcard $1/inc),$(eval $2_INC += $1/inc)) \
-        $(if $(wildcard $1/src), \
-            $(info Usando el codigo fuente $1/src) \
-            $(eval $2_SRC += $1/src) \
-            $(foreach path,$(wildcard $1/*),$(eval $(call analize_path,$(path),$2))) \
+        $(if $(wildcard $(path)/inc),$(eval $2_INC += $(path)/inc)) \
+        $(if $(wildcard $(path)/src), \
+            $(info Usando el codigo fuente $(path)/src) \
+            $(eval $2_SRC += $(path)/src) \
+            $(foreach path,$(wildcard $(path)/*),$(eval $(call analize_path,$(path),$2))) \
         ) \
     )
 endef
@@ -95,9 +141,9 @@ endef
 
 ###############################################################################
 # Definition of directories variables
-ROOT_DIR := .
 # out dir
-BUILD_DIR = $(ROOT_DIR)/build
+# BUILD_DIR = $(PROJECT_DIR)/build
+BUILD_DIR = build
 # object dir
 OBJ_DIR = $(BUILD_DIR)/obj
 # lib dir
@@ -110,32 +156,23 @@ GEN_DIR = $(BUILD_DIR)/gen
 ETC_DIR = $(BUILD_DIR)/etc
 
 ###############################################################################
-# Defintion of project name based on project paths if it was not defined in 
-# project makefile, used to define binary file and default target
-ifneq ($(PROJECT), )
-    -include $(PROJECT)/makefile
-    PROJECT_NAME ?= $(lastword $(subst /, , $(PROJECT)))
+#
+ifneq ($(wildcard $(PROJECT_DIR)/src), )
+    PROJECT_SRC ?= $(PROJECT_DIR)/src
 else
-    PROJECT = .
-    PROJECT_NAME ?= $(lastword $(subst /, , $(CURDIR)))
+    PROJECT_SRC ?= $(PROJECT_DIR)
 endif
 
-ifneq ($(wildcard $(PROJECT)/src), )
-    PROJECT_SRC ?= $(PROJECT)/src
+ifneq ($(wildcard $(PROJECT_DIR)/inc), )
+    PROJECT_INC ?= $(PROJECT_DIR)/inc
 else
-    PROJECT_SRC ?= $(PROJECT)
-endif
-
-ifneq ($(wildcard $(PROJECT)/inc), )
-    PROJECT_INC ?= $(PROJECT)/inc
-else
-    PROJECT_INC ?= $(PROJECT)
+    PROJECT_INC ?= $(PROJECT_DIR)
 endif
 
 ###############################################################################
 #
 
--include boards/$(BOARD)/makefile
+-include $(call full_path,boards/$(BOARD)/makefile)
 
 export BOARD
 export CPU
@@ -160,9 +197,8 @@ LD_TARGET = $(TARGET_NAME).$(LD_EXTENSION)
 
 ###############################################################################
 PROJECT_OBJ += $(call objects_list,$(PROJECT_SRC),c)
-PROJECT_OBJ := $(foreach path,$(PROJECT_OBJ),$(subst $(PROJECT),$(PROJECT_NAME),$(path)))
-$(foreach path, $(PROJECT_SRC),$(eval $(call c_compiler_rule,$(path),$($1_INC),$(subst $(PROJECT),$(OBJ_DIR)/$(PROJECT_NAME),$(path)))))
-$(foreach path, $(PROJECT_SRC),$(eval $(call assembler_rule,$(path),$($1_INC),$(subst $(PROJECT),$(OBJ_DIR)/$(PROJECT_NAME),$(path)))))
+$(foreach path,$(PROJECT_SRC),$(eval $(call c_compiler_rule,$(path),$($1_INC),$(OBJ_DIR)/$(call short_path,$(path)))))
+$(foreach path,$(PROJECT_SRC),$(eval $(call assembler_rule,$(path),$($1_INC),$(OBJ_DIR)/$(call short_path,$(path)))))
 
 ###############################################################################
 $(PROJECT_NAME): $(PROJECT_LIB) $(PROJECT_OBJ) 
@@ -179,18 +215,17 @@ $(PROJECT_NAME): $(PROJECT_LIB) $(PROJECT_OBJ)
 clean:
 	-@rm -r $(BUILD_DIR)
 
-NAMES = $(foreach path,$(CPU_PATHS),$(call uc,$(subst /,_,$(path)))_INC)
-DEBUG = $(foreach path,$(CPU_PATHS),$($(call uc,$(subst /,_,$(path)))_INC))
-DEBUG = $(foreach path,$(PROJECT_OBJ),$(patsubst $(PROJECT),$(OBJ_DIR)/%.o,$(path)))
-DEBUG = $(foreach path,$(PROJECT_OBJ),$(subst $(PROJECT),$(PROJECT_NAME),$(path)))
-
 info:
-	@echo Proyecto: $(PROJECT)
+	@echo =====================================================================================
+	@echo Nombre del proyecto: $(PROJECT_NAME)
+	@echo Ruta definida para el proyecto: $(PROJECT)
+	@echo Ruta absoluta del Proyecto: $(PROJECT_DIR)
+	@echo Binario final: $(LD_TARGET)
+	@echo -------------------------------------------------------------------------------------
 	@echo Modulos: $(MODULES)
 	@echo Placa: $(BOARD), $(CPU), $(SOC)
-	@echo Debug: $(DEBUG)
-	@echo Values: $(NAMES)
+	@echo -------------------------------------------------------------------------------------
+	@echo Fuentes: $(PROJECT_SRC)
+	@echo Cabeceras: $(PROJECT_INC)
 	@echo Objetos: $(PROJECT_OBJ)
-	@echo Rutas con cabeceras del CPU: $(CPU_INC)
-	@echo Rutas con cabeceras del SOC: $(SOC_INC)
-	@echo Demo: $(EXTERNALS_BASE_CPU_ARM-THUMB_INC)
+	@echo -------------------------------------------------------------------------------------
