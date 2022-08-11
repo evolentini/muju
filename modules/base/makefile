@@ -208,12 +208,21 @@ $(PROJECT_NAME): $(PROJECT_LIB) $(PROJECT_OBJ)
 	-@cp -f $(LD_TARGET) $(BIN_DIR)/project.$(LD_EXTENSION) 
 	@echo ' '
 
-.DEFAULT_GOAL := $(PROJECT_NAME)
+.DEFAULT_GOAL := all
+
+all: $(PROJECT_NAME) $(POST_BUILD_TARGETS)
 
 ###############################################################################
 # 
 clean:
 	-@rm -r $(BUILD_DIR)
+
+download: $(PROJECT_NAME)
+ifeq ($(FLASH_WRITER),)
+	$(error Flash write operation is not available for the board $(BOARD))
+else
+	@$(FLASH_WRITER) $(FLASH_WRITER_FLAGS) $(FLASH_WRITER_COMMANDS)
+endif
 
 info:
 	@echo =====================================================================================

@@ -44,13 +44,19 @@ AFLAGS += -ggdb3 -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=softfp -mthumb
 # Linker flags
 LFLAGS += -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=softfp
 
-# Debugger flags
-# GDB_FLAGS = $(LD_TARGET) -ex "target remote localhost:3333"
-
-#,-print-gc-sections
-# Optional POST BUILD
-# Generates a .bin image file
-POST_BUILD += arm-none-eabi-objcopy -v -O binary $(LD_TARGET) $(TARGET_NAME).bin
-
 # define linker extension
 LD_EXTENSION = elf
+
+# Generates a .bin image file
+BIN_TARGET = $(TARGET_NAME).bin
+POST_BUILD += arm-none-eabi-objcopy -v -O binary $(LD_TARGET) $(BIN_TARGET)
+
+
+# Binary name for OpenOCD download target
+OPENOCD_BIN 		   = openocd
+# Command flags for OpenOCD download target
+FLASH_WRITER_FLAGS = -f $(MUJU)/externals/base/soc/$(SOC)/openocd/lpc4337_new.cfg
+# Flash base address for OpenOCD download target
+FLASH_BASE_ADDRESS := 0x1A000000
+# Flash commandfor OpenOCD download target
+FLASH_WRITER_COMMANDS = -c "init" -c "halt 0" -c "flash write_image erase $(BIN_TARGET) $(FLASH_BASE_ADDRESS) bin" -c "reset run" -c "shutdown"

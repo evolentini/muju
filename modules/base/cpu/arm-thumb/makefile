@@ -46,6 +46,10 @@ AS = arm-none-eabi-as
 GDB = arm-none-eabi-gdb
 # ??
 NM = arm-none-eabi-nm
+# Debug server
+GDB_SERVER = openocd
+
+FLASH_WRITER = openocd
 
 # Preprocesor definitions
 DEFINES += BOARD=$(BOARD) CPU=$(CPU) SOC=$(SOC)
@@ -60,13 +64,13 @@ AFLAGS += -ggdb3 -mthumb
 LFLAGS += -L $(MUJU) -T $(LINKSCRIPT) -fno-builtin -mthumb -Wl,-Map="$(TARGET_NAME).map",-gc-sections,--cref
 
 # Debugger flags
-# GDB_FLAGS = $(LD_TARGET) -ex "target remote localhost:3333"
+GDB_FLAGS = $(LD_TARGET) -ex "target remote localhost:3333"
 
-#,-print-gc-sections
-# Optional POST BUILD
 # Generates a .bin image file
-POST_BUILD += arm-none-eabi-objcopy -v -O binary $(LD_TARGET) $(TARGET_NAME).bin
+POST_BUILD_TARGETS += objcopy
 
 # define linker extension
 LD_EXTENSION = elf
 
+objcopy: $(PROJECT_NAME)
+	@arm-none-eabi-objcopy -v -O binary $(LD_TARGET) $(TARGET_NAME).bin

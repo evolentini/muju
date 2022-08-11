@@ -12,6 +12,16 @@
                 "./externals/base/soc/lpc43xx/openocd/lpc4337_new.cfg"
             ],
             // "svdFile": "${workspaceFolder}/scripts/openocd/LPC43xx_43Sxx.svd",
+        },
+        {
+            "type": "cortex-debug",
+            "request": "attach",
+            "servertype": "external",
+            "cwd": "${workspaceRoot}",
+            "executable": "./build/bin/project.elf",
+            "name": "Renode",
+            "gdbTarget": "localhost:3333",
+            // "svdFile": "${workspaceFolder}/scripts/openocd/LPC43xx_43Sxx.svd",
         }
     ],
     "compounds": []
