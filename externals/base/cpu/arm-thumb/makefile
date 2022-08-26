@@ -55,4 +55,4 @@ $(eval NAME = $(call uc,$(subst /,_,$(FOLDER))))
 DEFINES += __USE_NEWLIB
 
 # Variable with linker flags required by thi module
-LFLAGS += -nostartfiles --specs=nano.specs
+LFLAGS += -nostartfiles --specs=nano.specs --specs=nosys.specs
