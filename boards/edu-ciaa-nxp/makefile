@@ -48,5 +48,8 @@ $(eval NAME = $(call uc,$(subst /,_,$(FOLDER_BRD))))
 $(NAME)_INC := $(FOLDER_BRD)/inc  $(FOLDER_CPU)/cmsis_core/inc $(FOLDER_SOC)/boards/inc $(FOLDER_SOC)/lpc_chip_43xx/inc 
 
 # Variable with the list of folders containing source files for the module
-$(NAME)_SRC := $(FOLDER_BRD)/src $(FOLDER_CPU)/cmsis_core/src $(FOLDER_CPU)/sys_newlib/src $(FOLDER_SOC)/lpc_chip_43xx/src $(FOLDER_SOC)/lpc_startup/src
+# $(NAME)_SRC := $(FOLDER_BRD)/src $(FOLDER_CPU)/cmsis_core/src $(FOLDER_CPU)/sys_newlib/src $(FOLDER_SOC)/lpc_chip_43xx/src $(FOLDER_SOC)/lpc_startup/src
+$(NAME)_SRC := $(FOLDER_BRD)/src $(FOLDER_CPU)/cmsis_core/src $(FOLDER_CPU)/sys_newlib/src $(FOLDER_SOC)/lpc_chip_43xx/src
 
+STARTUP := $(FOLDER_SOC)/lpc_startup/src
+$(if $(findstring $(STARTUP),$(PROJECT_SRC)),,$(eval PROJECT_SRC += $(STARTUP)))
