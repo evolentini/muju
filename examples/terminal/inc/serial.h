@@ -1,5 +1,5 @@
-/* Copyright 2022, Laboratorio de Microprocesadores 
- * Facultad de Ciencias Exactas y Tecnología 
+/* Copyright 2022, Laboratorio de Microprocesadores
+ * Facultad de Ciencias Exactas y Tecnología
  * Universidad Nacional de Tucuman
  * http://www.microprocesadores.unt.edu.ar/
  * Copyright 2022, Esteban Volentini <evolentini@herrera.unt.edu.ar>
@@ -32,10 +32,10 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef HAL_BOARD_H
-#define HAL_BOARD_H
+#ifndef SERIAL_H
+#define SERIAL_H
 
-/** \brief Digital inputs/outputs declarations
+/** \brief Serial asynconous port declarations
  **
  ** \addtogroup hal HAL
  ** \brief Hardware abstraction layer
@@ -43,8 +43,8 @@
 
 /* === Headers files inclusions ================================================================ */
 
-#include <stdint.h>
 #include <stdbool.h>
+#include <stdint.h>
 
 /* === Cabecera C++ ============================================================================ */
 
@@ -53,19 +53,46 @@ extern "C" {
 #endif
 
 /* === Public macros definitions =============================================================== */
- 
-/* === Public data type declarations =========================================================== */
 
+//! Referencia a un descriptor para gestionar puerto serial asincronico
+typedef struct serial_port_s * serial_port_t;
+
+typedef void (*serial_event_t)(serial_port_t);
+
+/* === Public data type declarations =========================================================== */
 
 /* === Public variable declarations ============================================================ */
 
 /* === Public function declarations ============================================================ */
 
-bool HalDigitalGetState(uint8_t port, uint8_t pin);
+/**
+ * @brief Metodo para crear un puerto serial asincronico
+ *
+ * @param   port            Puerto serial aseincrónico que se utiliza
+ * @param   bitrate         Velocidad de transmisión del puerto
+ * @return  serial_port_t   Puntero al descriptor de la salida creada
+ */
+serial_port_t SerialPortCreate(uint8_t port, uint32_t bitrate);
 
-void HalDigitalSetState(uint8_t port, uint8_t pin, bool state);
+/**
+ * @brief Metodo para enviar datos por un puerto serial
+ *
+ * @param   port    Puntero al descriptor de la entrada
+ * @return  true    La entrada esta activa
+ * @return  false   La entrada esta inactiva
+ */
+uint8_t SerialPortTransmit(serial_port_t port, void const * const data, uint8_t size);
 
-void HalDigitalToggle(uint8_t port, uint8_t pin);
+/**
+ * @brief Metodo para consultar cambios en el estado de una entrada digital
+ *
+ * @param   input   Puntero al descriptor de la entrada
+ * @return  true    La entrada tuvo cambios desde la ultima llamada
+ * @return  false   La entrada no tuvo cambios desde la ultima llamada
+ */
+uint8_t SerialPortReceive(serial_port_t port, void const * const data, uint8_t size);
+
+void SerialPortOnTransmited(serial_port_t port, serial_event_t handler);
 
 /* === End of documentation ==================================================================== */
 
@@ -75,4 +102,4 @@ void HalDigitalToggle(uint8_t port, uint8_t pin);
 
 /** @} End of module definition for doxygen */
 
-#endif   /* TERMINAL_H */
+#endif /* SERIAL_H */

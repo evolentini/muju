@@ -60,34 +60,28 @@ extern "C" {
     #define BOARD_ENET_PHY_ADDR     0x00
 #endif
 
-#define LED_RED                     0
-#define LED_GREEN                   1
-#define LED_BLUE                    2
-#define LED_1                       3
-#define LED_2                       4
-#define LED_3                       5
+#define BOARD_LED_R     &(const struct terminal_s){.port = 5, .pin = 0}
+#define BOARD_LED_G     &(const struct terminal_s){.port = 5, .pin = 1}
+#define BOARD_LED_B     &(const struct terminal_s){.port = 5, .pin = 2}
 
-#define BOARD_TEC_1                 0
-#define BOARD_TEC_2                 1
-#define BOARD_TEC_3                 2
-#define BOARD_TEC_4                 3
+#define BOARD_LED_1     &(const struct terminal_s){.port = 0, .pin = 14}
+#define BOARD_LED_2     &(const struct terminal_s){.port = 1, .pin = 11}
+#define BOARD_LED_3     &(const struct terminal_s){.port = 1, .pin = 12}
 
-#define BOARD_GPIO_0                0
-#define BOARD_GPIO_1                1
-#define BOARD_GPIO_2                2
-#define BOARD_GPIO_3                3
-#define BOARD_GPIO_4                4
-#define BOARD_GPIO_5                5
-#define BOARD_GPIO_6                6
-#define BOARD_GPIO_7                7
-#define BOARD_GPIO_8                8
+#define BOARD_TEC_1     &(const struct terminal_s){.port = 0, .pin = 4}
+#define BOARD_TEC_2     &(const struct terminal_s){.port = 0, .pin = 8}
+#define BOARD_TEC_3     &(const struct terminal_s){.port = 0, .pin = 9}
+#define BOARD_TEC_4     &(const struct terminal_s){.port = 1, .pin = 9}
+
+#define BOARD_INVERTED_INPUT    &(const struct digital_input_atributes_s){.inverted = true}
+#define BOARD_INVERTED_OUTPUT   &(const struct digital_output_atributes_s){.inverted = true}
 
 #define BOARD_I2C_PORT              I2C0
 #define BOARD_SPI_PORT              LPC_SSP1
 
 #define DEBUG_UART                  LPC_USART2
 #define DEBUG_UART_IRQ              USART2_IRQn
-#define DEBUG_UART_IRQHANDLER       UART2_IRQHandler
+#define DEBUG_UART_IRQHANDLER       
 
 
 // Debug UART defaults: 115200, 8N1.

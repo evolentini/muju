@@ -31,15 +31,14 @@
     - -:test/support
     - +:projects/*/test
     - -:projects/*/test/support
-    # - +:modules/*/test/support
-    # - -:modules/*/test/support
+    - +:modules/*/test
   :include:
     - projects/*/inc
-    # - modules/*/inc
+    - modules/*/inc
   :source:
     - projects/*/
     - projects/*/src
-    # - modules/*/src
+    - modules/*/src
   :support:
     - test/support
     - test/support/*/include
@@ -47,6 +46,8 @@
     # - projects/test/support/*/include
     # - modules/test/support
     # - modules/test/support/*/include
+    - modules/*/test/support
+    - modules/*/test/support/*/include
         
 # :files:
 #   :support:

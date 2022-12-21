@@ -32,19 +32,19 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef DIGITAL_H
-#define DIGITAL_H
+#ifndef QUEUE_H
+#define QUEUE_H
 
-/** \brief Digital inputs/outputs declarations
+/** \brief Abstract circular queue declarations
  **
- ** \addtogroup hal HAL
- ** \brief Hardware abstraction layer
+ ** Implements a circular queue following the Abstract Data Type pattern.
+ **
+ ** \addtogroup utils Utils
+ ** \brief Utilities as abstract data types
  ** @{ */
 
 /* === Headers files inclusions ================================================================ */
 
-#include "terminal.h"
-#include <stdbool.h>
 #include <stdint.h>
 
 /* === Cabecera C++ ============================================================================ */
@@ -55,99 +55,76 @@ extern "C" {
 
 /* === Public macros definitions =============================================================== */
 
+//! Referencia a un descriptor para gestionar un puerto serial
+typedef struct queue_s * queue_t;
+
 /* === Public data type declarations =========================================================== */
-
-typedef struct digital_input_atributes_s {
-    bool inverted : 1;
-    bool pullup : 1;
-    bool pulldown : 1;
-} const *digital_input_atributes_t;
-
-//!
-typedef struct digital_input_s *digital_input_t;
-
-typedef struct digital_output_atributes_s {
-    bool inverted : 1;
-    bool high_current : 1;
-    bool open_colector : 1;
-} const *digital_output_atributes_t;
-
-//!
-typedef struct digital_output_s *digital_output_t;
 
 /* === Public variable declarations ============================================================ */
 
 /* === Public function declarations ============================================================ */
 
 /**
- * @brief
+ * @brief Metodo para crear una cola circular
  *
- * @param terminal
- * @param atributes
- * @return digital_input_t
+ * @remark El parametro size solo es válido si las colas se utilizan creando memoria dinamica
+ * lo que se controla con el macro
+ *
+ * @param   size        Cantidad de datos maxima a almacenar en la cola
+ * @return  queue_t     Puntero al descriptor de la cola creada
  */
-digital_input_t DigitalInputCreate(terminal_t terminal, digital_input_atributes_t atributes);
+queue_t QueueCreate(uint16_t size);
 
 /**
- * @brief
+ * @brief Metodo para agregar datos a una cola circular
  *
- * @param output
- * @return true
- * @return false
+ * @param   queue       Puntero al descriptor de la cola circular
+ * @param   buffer      Vector que contiene la cadena de bytes a encolar
+ * @param   size        Cantidad de datos que se quieren ingresar a la cola
+ * @return  uint16_t    Cantidad de bytes efectivamente encolados
  */
-bool DigitalInputGetState(digital_input_t output);
-
-bool DigitalInputHasChanged(digital_input_t input);
-
-bool DigitalInputHasActivated(digital_input_t input);
-
-bool DigitalInputHasDeactivated(digital_input_t input);
+uint16_t QueuePut(queue_t queue, const void * buffer, uint16_t size);
 
 /**
- * @brief
+ * @brief Metodo para obtener datos a una cola circular
  *
- * @param terminal
- * @return digital_output_t
+ * @param   queue       Puntero al descriptor de la cola circular
+ * @param   buffer      Vector donde se almacenara la cadena de bytes a recuperar
+ * @param   size        Cantidad de datos que se quieren recuperar de la cola
+ * @return  uint16_t    Cantidad de bytes efectivamente recuperados
  */
-digital_output_t DigitalOutputCreate(terminal_t terminal, digital_output_atributes_t atributes);
+uint16_t QueueGet(queue_t queue, void * buffer, uint16_t size);
 
 /**
- * @brief
+ * @brief Metodo para destruir una cola circular
  *
- * @param output
- * @return true
- * @return false
+ * @param   queue   Puntero al descriptor de la cola a destruir
  */
-bool DigitalOutputGetState(digital_output_t output);
+void QueueDestroy(queue_t queue);
 
 /**
- * @brief
- *
- * @param output
- * @param state
+ * @brief Metodo para obtener el tamaño de una cola circular
+ * 
+ * @param   queue       Puntero al descriptor de la cola circular
+ * @return  uint16_t    Cantidad de byte que puede almacenar la cola
  */
-void DigitalOutputSetState(digital_output_t output, bool state);
+uint16_t QueueSize(queue_t queue);
 
 /**
- * @brief
- *
- * @param output
+ * @brief Metodo para obtener el espacio disponible en una cola circular
+ * 
+ * @param   queue       Puntero al descriptor de la cola circular
+ * @return  uint16_t    Cantidad de bytes diponibles en la cola
  */
-void DigitalOutputActivate(digital_output_t output);
+uint16_t QueueAvaiable(queue_t queue);
 
 /**
- * @brief
- *
- * @param output
+ * @brief Metodo para obtener el espacio ocupado en una cola circular
+ * 
+ * @param   queue       Puntero al descriptor de la cola circular
+ * @return  uint16_t    Cantidad de bytes ocupados en la cola
  */
-void DigitalOutputDeactivate(digital_output_t output);
-
-/**
- * @brief
- *
- * @param output
- */
-void DigitalOutputToggle(digital_output_t output);
+uint16_t QueueUsed(queue_t queue);
 
 /* === End of documentation ==================================================================== */
 
@@ -157,4 +134,4 @@ void DigitalOutputToggle(digital_output_t output);
 
 /** @} End of module definition for doxygen */
 
-#endif /* DIGITAL_H */
+#endif /* QUEUE_H */

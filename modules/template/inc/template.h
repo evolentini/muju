@@ -1,5 +1,5 @@
-/* Copyright 2022, Laboratorio de Microprocesadores 
- * Facultad de Ciencias Exactas y Tecnología 
+/* Copyright 2022, Laboratorio de Microprocesadores
+ * Facultad de Ciencias Exactas y Tecnología
  * Universidad Nacional de Tucuman
  * http://www.microprocesadores.unt.edu.ar/
  * Copyright 2022, Esteban Volentini <evolentini@herrera.unt.edu.ar>
@@ -52,9 +52,9 @@ extern "C" {
 #endif
 
 /* === Public macros definitions =============================================================== */
- 
+
 /* === Public data type declarations =========================================================== */
- 
+
 /* === Public variable declarations ============================================================ */
 
 /* === Public function declarations ============================================================ */
@@ -67,4 +67,4 @@ extern "C" {
 
 /** @} End of module definition for doxygen */
 
-#endif   /* TEMPLATE_H */
+#endif /* TEMPLATE_H */

@@ -44,6 +44,7 @@
 
 # Variable with the list of folders containing source files for the module
 # $(NAME)_SRC := $(FOLDER)/lpc_chip_43xx/src $(FOLDER)/lpc_startup/src boards/$(BOARD)/src
+PROJECT_SRC += externals/base/soc/lpc43xx/lpc_startup
 
 # Variable with linker script
 LINKSCRIPT = externals/base/soc/lpc43xx/linker/link.ld

@@ -1,5 +1,5 @@
-/* Copyright 2022, Laboratorio de Microprocesadores 
- * Facultad de Ciencias Exactas y Tecnología 
+/* Copyright 2022, Laboratorio de Microprocesadores
+ * Facultad de Ciencias Exactas y Tecnología
  * Universidad Nacional de Tucuman
  * http://www.microprocesadores.unt.edu.ar/
  * Copyright 2022, Esteban Volentini <evolentini@herrera.unt.edu.ar>
@@ -46,19 +46,19 @@
 
 /* === Macros definitions ====================================================================== */
 #ifndef HAL_USE_STATIC_ALOCATION
-    #ifndef HAL_USE_DYNAMIC_ALOCATION
-        #define HAL_USE_STATIC_ALOCATION
-    #endif
+#ifndef HAL_USE_DYNAMIC_ALOCATION
+#define HAL_USE_STATIC_ALOCATION
+#endif
 #endif
 
 #ifdef HAL_USE_STATIC_ALOCATION
-    #ifndef HAL_DIGITAL_INPUT_INSTANCES
-        #define HAL_DIGITAL_INPUT_INSTANCES     10
-    #endif
+#ifndef HAL_DIGITAL_INPUT_INSTANCES
+#define HAL_DIGITAL_INPUT_INSTANCES 10
+#endif
 
-    #ifndef HAL_DIGITAL_OUTPUT_INSTANCES
-        #define HAL_DIGITAL_OUTPUT_INSTANCES        10
-    #endif
+#ifndef HAL_DIGITAL_OUTPUT_INSTANCES
+#define HAL_DIGITAL_OUTPUT_INSTANCES 10
+#endif
 #endif
 /* === Private data type declarations ========================================================== */
 
@@ -73,7 +73,7 @@ struct digital_input_s {
 
 struct digital_output_s {
     struct terminal_s terminal[1];
-    struct digital_output_atributes_s atributes[1];       
+    struct digital_output_atributes_s atributes[1];
 #ifdef HAL_USE_STATIC_ALOCATION
     bool allocated;
 #endif
@@ -97,9 +97,9 @@ digital_input_t DigitalInputAllocate(void) {
     digital_input_t self = NULL;
 
 #ifdef HAL_USE_STATIC_ALOCATION
-    static struct digital_input_s instances[HAL_DIGITAL_INPUT_INSTANCES] =  {0};
+    static struct digital_input_s instances[HAL_DIGITAL_INPUT_INSTANCES] = {0};
 
-    for(int index = 0; index < HAL_DIGITAL_INPUT_INSTANCES; index++) {
+    for (int index = 0; index < HAL_DIGITAL_INPUT_INSTANCES; index++) {
         if (!instances[index].allocated) {
             instances[index].allocated = true;
             self = &instances[index];
@@ -117,9 +117,9 @@ digital_output_t DigitalOutputAllocate(void) {
     digital_output_t self = NULL;
 
 #ifdef HAL_USE_STATIC_ALOCATION
-    static struct digital_output_s instances[HAL_DIGITAL_OUTPUT_INSTANCES] =  {0};
+    static struct digital_output_s instances[HAL_DIGITAL_OUTPUT_INSTANCES] = {0};
 
-    for(int index = 0; index < HAL_DIGITAL_OUTPUT_INSTANCES; index++) {
+    for (int index = 0; index < HAL_DIGITAL_OUTPUT_INSTANCES; index++) {
         if (!instances[index].allocated) {
             instances[index].allocated = true;
             self = &instances[index];
@@ -137,7 +137,7 @@ digital_output_t DigitalOutputAllocate(void) {
 
 digital_input_t DigitalInputCreate(terminal_t terminal, digital_input_atributes_t atributes) {
     digital_input_t self = DigitalInputAllocate();
-    
+
     if (self) {
         memcpy(self->terminal, terminal, sizeof(struct terminal_s));
         memcpy(self->atributes, atributes, sizeof(struct digital_input_atributes_s));
@@ -185,10 +185,9 @@ bool DigitalInputHasDeactivated(digital_input_t input) {
     return result;
 }
 
-
 digital_output_t DigitalOutputCreate(terminal_t terminal, digital_output_atributes_t atributes) {
     digital_output_t self = DigitalOutputAllocate();
-    
+
     if (self) {
         memcpy(self->terminal, terminal, sizeof(struct terminal_s));
         memcpy(self->atributes, atributes, sizeof(struct digital_output_atributes_s));
@@ -197,29 +196,27 @@ digital_output_t DigitalOutputCreate(terminal_t terminal, digital_output_atribut
     return self;
 }
 
-bool DigitalOuputGetState(digital_output_t output) {
+bool DigitalOutputGetState(digital_output_t output) {
     bool state = HalDigitalGetState(output->terminal->port, output->terminal->pin);
     return (state ^ output->atributes->inverted);
 }
 
-void DigitalOuputSetState(digital_output_t output, bool state) {
+void DigitalOutputSetState(digital_output_t output, bool state) {
     state = state ^ output->atributes->inverted;
-    HalDigitalSetState( output->terminal->port,  output->terminal->pin, state);
+    HalDigitalSetState(output->terminal->port, output->terminal->pin, state);
 }
 
-void DigitalOuputActivate(digital_output_t output) {
+void DigitalOutputActivate(digital_output_t output) {
     bool state = !output->atributes->inverted;
-    HalDigitalSetState( output->terminal->port,  output->terminal->pin, state);
+    HalDigitalSetState(output->terminal->port, output->terminal->pin, state);
 }
 
-void DigitalOuputDeactivate(digital_output_t output) {
+void DigitalOutputDeactivate(digital_output_t output) {
     bool state = output->atributes->inverted;
-    HalDigitalSetState( output->terminal->port,  output->terminal->pin, state);
+    HalDigitalSetState(output->terminal->port, output->terminal->pin, state);
 }
 
-void DigitalOuputToggle(digital_output_t output) {
-    HalDigitalToggle(output->terminal->port, output->terminal->pin);
-}
+void DigitalOutputToggle(digital_output_t output) { HalDigitalToggle(output->terminal->port, output->terminal->pin); }
 
 /* === End of documentation ==================================================================== */
 

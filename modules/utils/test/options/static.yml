@@ -1,0 +1,10 @@
+:defines:
+  :common: &common_defines 
+    - USE_STATIC_MEMORY
+    - QUEUE_SIZE=16
+  :test:
+    - *common_defines
+    - TEST
+  :test_preprocess:
+    - *common_defines
+    - TEST

@@ -37,23 +37,23 @@
  **
  ** @brief Ejemplo de un led parpadeando
  **
- ** Ejemplo de un led parpadeando utilizando la capa de abstraccion de 
+ ** Ejemplo de un led parpadeando utilizando la capa de abstraccion de
  ** hardware y con sistema operativo FreeRTOS.
- ** 
+ **
  ** | RV | YYYY.MM.DD | Autor       | Descripción de los cambios              |
  ** |----|------------|-------------|-----------------------------------------|
  ** |  2 | 2017.10.16 | evolentini  | Correción en el formato del archivo     |
  ** |  1 | 2017.09.21 | evolentini  | Version inicial del archivo             |
- ** 
+ **
  ** @defgroup ejemplos Proyectos de ejemplo
  ** @brief Proyectos de ejemplo de la Especialización en Sistemas Embebidos
- ** @{ 
+ ** @{
  */
 
 /* === Inclusiones de cabeceras ============================================ */
 #include "FreeRTOS.h"
-#include "task.h"
 #include "hal.h"
+#include "task.h"
 #include <stdbool.h>
 
 /* === Definicion y Macros ================================================= */
@@ -63,11 +63,11 @@
 /* === Declaraciones de funciones internas ================================= */
 
 /** @brief Función que implementa una tarea de baliza
- ** 
+ **
  ** @parameter[in] parametros Puntero a una estructura que contiene el led
  **                           y la demora entre encendido y apagado.
- */ 
-void Blinking(void * paramparametersetros);
+ */
+void Blinking(void *paramparametersetros);
 
 /* === Definiciones de variables internas ================================== */
 
@@ -75,41 +75,35 @@ void Blinking(void * paramparametersetros);
 
 /* === Definiciones de funciones internas ================================== */
 
-void Blinking(void * parameters) {
-   digital_output_t led = DigitalOutputCreate(BLINKING_LED, 
-      &(const struct digital_output_atributes_s) {
-         .inverted = true,
-      }
-   );
-   
-   while(true) {
-      DigitalOuputToggle(led);
-      vTaskDelay(pdMS_TO_TICKS(500));
-   }
+void Blinking(void *parameters) {
+    digital_output_t led = DigitalOutputCreate(BLINKING_LED, &(const struct digital_output_atributes_s){
+                                                                 .inverted = true,
+                                                             });
+
+    while (true) {
+        DigitalOutputToggle(led);
+        vTaskDelay(pdMS_TO_TICKS(500));
+    }
 }
 
-void Touch(void * parameters) {
-   digital_output_t led = DigitalOutputCreate(TOUCH_LED,
-      &(const struct digital_output_atributes_s) {}
-   );
-   digital_input_t key = DigitalInputCreate(TOUCH_KEY,
-      &(const struct digital_input_atributes_s) {
-         .inverted = true,
-         .pullup = true,
-      }
-   );
+void Touch(void *parameters) {
+    digital_output_t led = DigitalOutputCreate(TOUCH_LED, &(const struct digital_output_atributes_s){});
+    digital_input_t key = DigitalInputCreate(TOUCH_KEY, &(const struct digital_input_atributes_s){
+                                                            .inverted = true,
+                                                            .pullup = true,
+                                                        });
 
-   bool state = false;
-   bool presed = false;
+    bool state = false;
+    bool presed = false;
 
-   while(true) {
-      presed = DigitalInputGetState(key);
-      if (presed != state) {
-         DigitalOuputSetState(led, presed);
-      }
-      state = presed;
-      vTaskDelay(pdMS_TO_TICKS(150));
-   }
+    while (true) {
+        presed = DigitalInputGetState(key);
+        if (presed != state) {
+            DigitalOutputSetState(led, presed);
+        }
+        state = presed;
+        vTaskDelay(pdMS_TO_TICKS(150));
+    }
 }
 
 /* === Definiciones de funciones externas ================================== */
@@ -122,21 +116,22 @@ void Touch(void * parameters) {
  **          El valor de retorno 0 es para evitar un error en el compilador.
  */
 int main(void) {
-   /* Inicializaciones y configuraciones de dispositivos */
-   HalBoardInit();
+    /* Inicializaciones y configuraciones de dispositivos */
+    HalBoardInit();
 
-   /* Creación de las tareas */
-   xTaskCreate(Blinking, "Blinking", configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY + 1, NULL);
-   xTaskCreate(Touch, "Touch", configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY + 2, NULL);
+    /* Creación de las tareas */
+    xTaskCreate(Blinking, "Blinking", configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY + 1, NULL);
+    xTaskCreate(Touch, "Touch", configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY + 2, NULL);
 
-   /* Arranque del sistema operativo */
-   vTaskStartScheduler();
-   
-   /* vTaskStartScheduler solo retorna si se detiene el sistema operativo */
-   while(1);
+    /* Arranque del sistema operativo */
+    vTaskStartScheduler();
 
-   /* El valor de retorno es solo para evitar errores en el compilador*/
-   return 0;
+    /* vTaskStartScheduler solo retorna si se detiene el sistema operativo */
+    while (1)
+        ;
+
+    /* El valor de retorno es solo para evitar errores en el compilador*/
+    return 0;
 }
 /* === Ciere de documentacion ============================================== */
 /** @} Final de la definición del modulo para doxygen */

@@ -37,24 +37,24 @@
  **
  ** @brief Ejemplo de un led parpadeando
  **
- ** Ejemplo de un led parpadeando utilizando la capa de abstraccion de 
+ ** Ejemplo de un led parpadeando utilizando la capa de abstraccion de
  ** hardware y con sistema operativo FreeRTOS.
- ** 
+ **
  ** | RV | YYYY.MM.DD | Autor       | Descripción de los cambios              |
  ** |----|------------|-------------|-----------------------------------------|
  ** |  2 | 2017.10.16 | evolentini  | Correción en el formato del archivo     |
  ** |  1 | 2017.09.21 | evolentini  | Version inicial del archivo             |
- ** 
+ **
  ** @defgroup ejemplos Proyectos de ejemplo
  ** @brief Proyectos de ejemplo de la Especialización en Sistemas Embebidos
- ** @{ 
+ ** @{
  */
 
 /* === Inclusiones de cabeceras ============================================ */
 #include "FreeRTOS.h"
-#include "task.h"
 #include "board.h"
 #include "digital.h"
+#include "task.h"
 #include <stdbool.h>
 
 /* === Definicion y Macros ================================================= */
@@ -64,11 +64,11 @@
 /* === Declaraciones de funciones internas ================================= */
 
 /** @brief Función que implementa una tarea de baliza
- ** 
+ **
  ** @parameter[in] parametros Puntero a una estructura que contiene el led
  **                           y la demora entre encendido y apagado.
- */ 
-void Blinking(void * parametros);
+ */
+void Blinking(void *parametros);
 
 /* === Definiciones de variables internas ================================== */
 
@@ -76,12 +76,12 @@ void Blinking(void * parametros);
 
 /* === Definiciones de funciones internas ================================== */
 
-void Blinking(void * parametros) {
-   digital_output_t led = DigitalOutputCreate(TEST_LED_GPIO, TEST_LED_BIT);
-   while(true) {
-      DigitalOuputToggle(led);
-      vTaskDelay(pdMS_TO_TICKS(500));
-   }
+void Blinking(void *parametros) {
+    digital_output_t led = DigitalOutputCreate(TEST_LED_GPIO, TEST_LED_BIT);
+    while (true) {
+        DigitalOutputToggle(led);
+        vTaskDelay(pdMS_TO_TICKS(500));
+    }
 }
 /* === Definiciones de funciones externas ================================== */
 
@@ -93,20 +93,21 @@ void Blinking(void * parametros) {
  **          El valor de retorno 0 es para evitar un error en el compilador.
  */
 int main(void) {
-   /* Inicializaciones y configuraciones de dispositivos */
-   BoardInit();
+    /* Inicializaciones y configuraciones de dispositivos */
+    BoardInit();
 
-   /* Creación de las tareas */
-   xTaskCreate(Blinking, "Azul", configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY + 1, NULL);
+    /* Creación de las tareas */
+    xTaskCreate(Blinking, "Azul", configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY + 1, NULL);
 
-   /* Arranque del sistema operativo */
-   vTaskStartScheduler();
-   
-   /* vTaskStartScheduler solo retorna si se detiene el sistema operativo */
-   while(1);
+    /* Arranque del sistema operativo */
+    vTaskStartScheduler();
 
-   /* El valor de retorno es solo para evitar errores en el compilador*/
-   return 0;
+    /* vTaskStartScheduler solo retorna si se detiene el sistema operativo */
+    while (1)
+        ;
+
+    /* El valor de retorno es solo para evitar errores en el compilador*/
+    return 0;
 }
 /* === Ciere de documentacion ============================================== */
 /** @} Final de la definición del modulo para doxygen */

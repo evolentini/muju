@@ -1,5 +1,5 @@
-/* Copyright 2022, Laboratorio de Microprocesadores
- * Facultad de Ciencias Exactas y Tecnología
+/* Copyright 2022, Laboratorio de Microprocesadores 
+ * Facultad de Ciencias Exactas y Tecnología 
  * Universidad Nacional de Tucuman
  * http://www.microprocesadores.unt.edu.ar/
  * Copyright 2022, Esteban Volentini <evolentini@herrera.unt.edu.ar>
@@ -32,8 +32,8 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef DIGITAL_H
-#define DIGITAL_H
+#ifndef HAL_GPIO_H
+#define HAL_GPIO_H
 
 /** \brief Digital inputs/outputs declarations
  **
@@ -43,9 +43,8 @@
 
 /* === Headers files inclusions ================================================================ */
 
-#include "terminal.h"
-#include <stdbool.h>
 #include <stdint.h>
+#include <stdbool.h>
 
 /* === Cabecera C++ ============================================================================ */
 
@@ -54,100 +53,18 @@ extern "C" {
 #endif
 
 /* === Public macros definitions =============================================================== */
-
+ 
 /* === Public data type declarations =========================================================== */
-
-typedef struct digital_input_atributes_s {
-    bool inverted : 1;
-    bool pullup : 1;
-    bool pulldown : 1;
-} const *digital_input_atributes_t;
-
-//!
-typedef struct digital_input_s *digital_input_t;
-
-typedef struct digital_output_atributes_s {
-    bool inverted : 1;
-    bool high_current : 1;
-    bool open_colector : 1;
-} const *digital_output_atributes_t;
-
-//!
-typedef struct digital_output_s *digital_output_t;
 
 /* === Public variable declarations ============================================================ */
 
 /* === Public function declarations ============================================================ */
 
-/**
- * @brief
- *
- * @param terminal
- * @param atributes
- * @return digital_input_t
- */
-digital_input_t DigitalInputCreate(terminal_t terminal, digital_input_atributes_t atributes);
+bool HalDigitalGetState(uint8_t port, uint8_t pin);
 
-/**
- * @brief
- *
- * @param output
- * @return true
- * @return false
- */
-bool DigitalInputGetState(digital_input_t output);
+void HalDigitalSetState(uint8_t port, uint8_t pin, bool state);
 
-bool DigitalInputHasChanged(digital_input_t input);
-
-bool DigitalInputHasActivated(digital_input_t input);
-
-bool DigitalInputHasDeactivated(digital_input_t input);
-
-/**
- * @brief
- *
- * @param terminal
- * @return digital_output_t
- */
-digital_output_t DigitalOutputCreate(terminal_t terminal, digital_output_atributes_t atributes);
-
-/**
- * @brief
- *
- * @param output
- * @return true
- * @return false
- */
-bool DigitalOutputGetState(digital_output_t output);
-
-/**
- * @brief
- *
- * @param output
- * @param state
- */
-void DigitalOutputSetState(digital_output_t output, bool state);
-
-/**
- * @brief
- *
- * @param output
- */
-void DigitalOutputActivate(digital_output_t output);
-
-/**
- * @brief
- *
- * @param output
- */
-void DigitalOutputDeactivate(digital_output_t output);
-
-/**
- * @brief
- *
- * @param output
- */
-void DigitalOutputToggle(digital_output_t output);
+void HalDigitalToggle(uint8_t port, uint8_t pin);
 
 /* === End of documentation ==================================================================== */
 
@@ -157,4 +74,4 @@ void DigitalOutputToggle(digital_output_t output);
 
 /** @} End of module definition for doxygen */
 
-#endif /* DIGITAL_H */
+#endif   /* HAL_GPIO_H */
