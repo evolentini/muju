@@ -1,5 +1,5 @@
-MODULES = modules/hal modules/freertos
+MODULES = modules/hal modules/saio
 BOARD ?= edu-ciaa-nxp
-PROJECT ?= projects/demo
+PROJECT ?= examples/demo_saio
 
 include modules/base/makefile

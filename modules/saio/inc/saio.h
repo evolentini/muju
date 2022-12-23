@@ -32,8 +32,8 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef HAL_H
-#define HAL_H
+#ifndef SAIO_H
+#define SAIO_H
 
 /** \brief Digital inputs/outputs declarations
  **
@@ -43,12 +43,7 @@
 
 /* === Headers files inclusions ================================================================ */
 
-#include "hal_gpio.h"
-#include "hal_pin.h"
-#include "hal_sci.h"
-#include "soc_gpio.h"
-#include "soc_pin.h"
-#include "soc_sci.h"
+#include "digital.h"
 
 /* === Cabecera C++ ============================================================================ */
 
@@ -72,4 +67,4 @@ extern "C" {
 
 /** @} End of module definition for doxygen */
 
-#endif /* HAL_H */
+#endif /* SAIO_H */

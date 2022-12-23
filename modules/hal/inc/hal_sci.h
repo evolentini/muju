@@ -32,8 +32,8 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef HAL_H
-#define HAL_H
+#ifndef HAL_SCI_H
+#define HAL_SCI_H
 
 /** \brief Digital inputs/outputs declarations
  **
@@ -43,12 +43,8 @@
 
 /* === Headers files inclusions ================================================================ */
 
-#include "hal_gpio.h"
-#include "hal_pin.h"
-#include "hal_sci.h"
-#include "soc_gpio.h"
-#include "soc_pin.h"
-#include "soc_sci.h"
+#include <stdbool.h>
+#include <stdint.h>
 
 /* === Cabecera C++ ============================================================================ */
 
@@ -60,9 +56,41 @@ extern "C" {
 
 /* === Public data type declarations =========================================================== */
 
+typedef enum {
+    SCI_NO_PARITY,
+    SCI_ODD_PARITY,
+    SCI_EVEN_PARITY,
+    SCI_MARK_PARITY,
+    SCI_SPACE_PARITY,
+} sci_parity_t;
+
+typedef struct sci_status_s {
+    bool data_ready : 1;
+    bool overrun : 1;
+    bool parity_error : 1;
+    bool framing_error : 1;
+    bool break_signal : 1;
+    bool fifo_empty : 1;
+    bool tramition_completed;
+} * sci_status_t;
+
+typedef struct hal_sci_s * const hal_sci_t;
+
+typedef void (*hal_sci_event_t)(hal_sci_t sci, sci_status_t status);
+
 /* === Public variable declarations ============================================================ */
 
 /* === Public function declarations ============================================================ */
+
+void SciSetConfig(hal_sci_t sci, uint32_t baud_rate, uint8_t data_bits, sci_parity_t parity);
+
+uint16_t SciSendData(hal_sci_t sci, void const * const data, uint16_t size);
+
+uint16_t SciReceiveData(hal_sci_t sci, void * data, uint16_t size);
+
+void SciReadStatus(hal_sci_t sci, sci_status_t result, bool clear_status);
+
+void SciSetEventHandler(hal_sci_t sci, hal_sci_event_t handler);
 
 /* === End of documentation ==================================================================== */
 
@@ -72,4 +100,4 @@ extern "C" {
 
 /** @} End of module definition for doxygen */
 
-#endif /* HAL_H */
+#endif /* HAL_SCI_H */

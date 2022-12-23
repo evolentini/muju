@@ -1,3 +1,28 @@
 {
+    "editor.codeActionsOnSave": {
+        "source.fixAll": true
+    },
     "editor.formatOnSave": true,
+    "clang-format.style": "file",
+    "clang-format.language.c.enable": true,
+    "[c]": {
+        "editor.defaultFormatter": "xaver.clang-format",
+        "editor.wordBasedSuggestions": false,
+        "editor.suggest.insertMode": "replace",
+        "editor.semanticHighlighting.enabled": true
+    },
+    "files.associations": {
+        "hal.h": "c",
+        "hal_gpio.h": "c",
+        "soc_pin.h": "c",
+        "hal_pin.h": "c",
+        "stdbool.h": "c",
+        "soc_gpio.h": "c",
+        "functional": "c",
+        "soc_sci.h": "c",
+        "chrono": "c",
+        "variant": "c",
+        "saio.h": "c",
+        "digital.h": "c"
+    }
 }

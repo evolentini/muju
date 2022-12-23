@@ -32,18 +32,29 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-/** \brief Blinking sample project
+/** \brief Simple sample of use LPC HAL gpio functions
  **
- ** \addtogroup samples Samples
- ** \brief Sample projects
+ ** \addtogroup samples Sample projects
+ ** \brief Sample projects to use as a starting point
  ** @{ */
 
 /* === Headers files inclusions =============================================================== */
 
+#include "chip.h"
 #include "hal.h"
-#include <stdbool.h>
 
 /* === Macros definitions ====================================================================== */
+
+#define LED_RGB_R  GPIO5_0
+#define LED_RGB_G  GPIO5_1
+#define LED_RGB_B  GPIO5_2
+#define LED_RED    GPIO0_14
+#define LED_YELLOW GPIO1_11
+#define LED_GREEN  GPIO1_12
+#define TEC_1      GPIO0_4
+#define TEC_2      GPIO0_8
+#define TEC_3      GPIO0_9
+#define TEC_4      GPIO1_9
 
 /* === Private data type declarations ========================================================== */
 
@@ -51,13 +62,15 @@
 
 /* === Private function declarations =========================================================== */
 
+static void delay(void);
+
 /* === Public variable definitions ============================================================= */
 
 /* === Private variable definitions ============================================================ */
 
 /* === Private function implementation ========================================================= */
 
-void delay(void) {
+static void delay(void) {
     for (int index = 0; index < 100; index++) {
         for (int delay = 0; delay < 25000; delay++) {
             __asm("NOP");
@@ -68,10 +81,64 @@ void delay(void) {
 /* === Public function implementation ========================================================= */
 
 int main(void) {
-    GpioSetDirection(GPIO5_2, true);
+    int divisor = 0;
+    bool current_state, last_state = false;
+
+    PinSetFunction(P2_0, GPIO, false);
+    GpioSetDirection(LED_RGB_R, true);
+    PinSetFunction(P2_1, GPIO, false);
+    GpioSetDirection(LED_RGB_G, true);
+    PinSetFunction(P2_2, GPIO, false);
+    GpioSetDirection(LED_RGB_B, true);
+
+    PinSetFunction(P2_10, GPIO, false);
+    GpioSetDirection(LED_RED, true);
+    PinSetFunction(P2_11, GPIO, false);
+    GpioSetDirection(LED_YELLOW, true);
+    PinSetFunction(P2_12, GPIO, false);
+    GpioSetDirection(LED_GREEN, true);
+
+    PinSetFunction(P1_0, GPIO, true);
+    GpioSetDirection(TEC_1, false);
+    PinSetFunction(P1_1, GPIO, true);
+    GpioSetDirection(TEC_2, false);
+    PinSetFunction(P1_2, GPIO, true);
+    GpioSetDirection(TEC_3, false);
+    PinSetFunction(P1_6, GPIO, true);
+    GpioSetDirection(TEC_4, false);
+
+    PinSetFunction(P7_1, SCI_TX, false);
+    PinSetFunction(P7_2, SCI_RX, true);
+    SciSetConfig(USART2, 115200, 8, SCI_NO_PARITY);
 
     while (true) {
-        GpioBitToogle(GPIO5_2);
+        if (GpioGetState(TEC_1) == 0) {
+            GpioSetState(LED_RGB_B, true);
+        } else {
+            GpioSetState(LED_RGB_B, false);
+        }
+
+        current_state = (GpioGetState(TEC_2) == 0);
+        if ((current_state) && (!last_state)) {
+            GpioBitToogle(LED_RED);
+            SciSendData(USART2, "Hola\r\n", 6);
+            // Chip_UART_SendBlocking(LPC_USART2, "Hola\r\n", 6);
+        }
+        last_state = current_state;
+
+        if (GpioGetState(TEC_3) == 0) {
+            GpioSetState(LED_YELLOW, true);
+        }
+        if (GpioGetState(TEC_4) == 0) {
+            GpioSetState(LED_YELLOW, false);
+        }
+
+        divisor++;
+        if (divisor == 5) {
+            divisor = 0;
+            GpioBitToogle(LED_GREEN);
+        }
+
         delay();
     }
 }

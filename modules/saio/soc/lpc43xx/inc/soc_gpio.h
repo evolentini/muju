@@ -1,5 +1,5 @@
-/* Copyright 2022, Laboratorio de Microprocesadores 
- * Facultad de Ciencias Exactas y Tecnología 
+/* Copyright 2022, Laboratorio de Microprocesadores
+ * Facultad de Ciencias Exactas y Tecnología
  * Universidad Nacional de Tucuman
  * http://www.microprocesadores.unt.edu.ar/
  * Copyright 2022, Esteban Volentini <evolentini@herrera.unt.edu.ar>
@@ -32,8 +32,8 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef TERMINAL_H
-#define TERMINAL_H
+#ifndef SOC_PIN_H
+#define SOC_PIN_H
 
 /** \brief Digital inputs/outputs declarations
  **
@@ -43,6 +43,7 @@
 
 /* === Headers files inclusions ================================================================ */
 
+#include <stdbool.h>
 #include <stdint.h>
 
 /* === Cabecera C++ ============================================================================ */
@@ -52,13 +53,12 @@ extern "C" {
 #endif
 
 /* === Public macros definitions =============================================================== */
- 
-/* === Public data type declarations =========================================================== */
 
-typedef struct terminal_s {
-    uint8_t port;
-    uint8_t pin;
-} const * terminal_t;
+struct hal_pin_s {
+    /* data */
+};
+
+/* === Public data type declarations =========================================================== */
 
 /* === Public variable declarations ============================================================ */
 
@@ -72,4 +72,4 @@ typedef struct terminal_s {
 
 /** @} End of module definition for doxygen */
 
-#endif   /* TERMINAL_H */
+#endif /* TERMINAL_H */

@@ -32,8 +32,8 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef HAL_H
-#define HAL_H
+#ifndef DIGITAL_H
+#define DIGITAL_H
 
 /** \brief Digital inputs/outputs declarations
  **
@@ -43,12 +43,9 @@
 
 /* === Headers files inclusions ================================================================ */
 
-#include "hal_gpio.h"
-#include "hal_pin.h"
-#include "hal_sci.h"
-#include "soc_gpio.h"
-#include "soc_pin.h"
-#include "soc_sci.h"
+#include "hal.h"
+#include <stdbool.h>
+#include <stdint.h>
 
 /* === Cabecera C++ ============================================================================ */
 
@@ -60,9 +57,97 @@ extern "C" {
 
 /* === Public data type declarations =========================================================== */
 
+typedef struct digital_input_atributes_s {
+    bool inverted : 1;
+    bool pullup : 1;
+    bool pulldown : 1;
+} const * digital_input_atributes_t;
+
+//!
+typedef struct digital_input_s * digital_input_t;
+
+typedef struct digital_output_atributes_s {
+    bool inverted : 1;
+    bool high_current : 1;
+    bool open_colector : 1;
+} const * digital_output_atributes_t;
+
+//!
+typedef struct digital_output_s * digital_output_t;
+
 /* === Public variable declarations ============================================================ */
 
 /* === Public function declarations ============================================================ */
+
+/**
+ * @brief
+ *
+ * @param gpio
+ * @param atributes
+ * @return digital_input_t
+ */
+digital_input_t DigitalInputCreate(hal_gpio_bit_t gpio, digital_input_atributes_t atributes);
+
+/**
+ * @brief
+ *
+ * @param output
+ * @return true
+ * @return false
+ */
+bool DigitalInputGetState(digital_input_t output);
+
+bool DigitalInputHasChanged(digital_input_t input);
+
+bool DigitalInputHasActivated(digital_input_t input);
+
+bool DigitalInputHasDeactivated(digital_input_t input);
+
+/**
+ * @brief
+ *
+ * @param terminal
+ * @return digital_output_t
+ */
+digital_output_t DigitalOutputCreate(hal_gpio_bit_t gpio, digital_output_atributes_t atributes);
+
+/**
+ * @brief
+ *
+ * @param output
+ * @return true
+ * @return false
+ */
+bool DigitalOutputGetState(digital_output_t output);
+
+/**
+ * @brief
+ *
+ * @param output
+ * @param state
+ */
+void DigitalOutputSetState(digital_output_t output, bool state);
+
+/**
+ * @brief
+ *
+ * @param output
+ */
+void DigitalOutputActivate(digital_output_t output);
+
+/**
+ * @brief
+ *
+ * @param output
+ */
+void DigitalOutputDeactivate(digital_output_t output);
+
+/**
+ * @brief
+ *
+ * @param output
+ */
+void DigitalOutputToggle(digital_output_t output);
 
 /* === End of documentation ==================================================================== */
 
@@ -72,4 +157,4 @@ extern "C" {
 
 /** @} End of module definition for doxygen */
 
-#endif /* HAL_H */
+#endif /* DIGITAL_H */

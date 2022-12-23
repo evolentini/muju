@@ -32,22 +32,35 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-/** \brief Blinking sample project
+/** \brief Digital inputs/outputs definitions
  **
- ** \addtogroup samples Samples
- ** \brief Sample projects
+ ** \addtogroup hal HAL
+ ** \brief Hardware abstraction layer
  ** @{ */
 
 /* === Headers files inclusions =============================================================== */
 
-#include "hal.h"
-#include <stdbool.h>
+#include "soc_sci.h"
+#include "chip.h"
 
 /* === Macros definitions ====================================================================== */
 
 /* === Private data type declarations ========================================================== */
 
+struct hal_sci_s {
+    LPC_USART_T * port;
+    hal_sci_event_t handler;
+};
+
 /* === Private variable declarations =========================================================== */
+
+hal_sci_t USART0 = &(struct hal_sci_s){.port = LPC_USART0, .handler = NULL};
+
+hal_sci_t UART1 = &(struct hal_sci_s){.port = LPC_UART1, .handler = NULL};
+
+hal_sci_t USART2 = &(struct hal_sci_s){.port = LPC_USART2, .handler = NULL};
+
+hal_sci_t USART3 = &(struct hal_sci_s){.port = LPC_USART3, .handler = NULL};
 
 /* === Private function declarations =========================================================== */
 
@@ -57,23 +70,63 @@
 
 /* === Private function implementation ========================================================= */
 
-void delay(void) {
-    for (int index = 0; index < 100; index++) {
-        for (int delay = 0; delay < 25000; delay++) {
-            __asm("NOP");
-        }
+/* === Public function implementation ========================================================= */
+
+void SciSetConfig(hal_sci_t sci, uint32_t baud_rate, uint8_t data_bits, sci_parity_t parity) {
+    Chip_UART_Init(sci->port);
+    Chip_UART_SetBaud(sci->port, baud_rate);
+    Chip_UART_SetupFIFOS(sci->port, UART_FCR_FIFO_EN | UART_FCR_TRG_LEV0);
+    Chip_UART_TXEnable(sci->port);
+}
+
+uint16_t SciSendData(hal_sci_t sci, void const * const data, uint16_t size) {
+    return Chip_UART_Send(sci->port, data, size);
+}
+
+uint16_t SciReceiveData(hal_sci_t sci, void * data, uint16_t size) {
+    return Chip_UART_Read(sci->port, data, size);
+}
+
+void SciReadStatus(hal_sci_t sci, sci_status_t result, bool clear_status) {
+    uint32_t status;
+
+    status = Chip_UART_ReadLineStatus(sci->port);
+    result->data_ready = status & UART_LSR_RDR;
+    result->overrun = status & UART_LSR_OE;
+    result->parity_error = status & UART_LSR_PE;
+    result->framing_error = status & UART_LSR_FE;
+    result->break_signal = status & UART_LSR_BI;
+    result->fifo_empty = status & UART_LSR_THRE;
+    result->tramition_completed = status & UART_LSR_TEMT;
+}
+
+void SciSetEventHandler(hal_sci_t sci, hal_sci_event_t handler) {
+    sci->handler = handler;
+}
+
+static void SciHandleEvent(hal_sci_t sci) {
+    struct sci_status_s status;
+
+    SciReadStatus(sci, &status, TRUE);
+    if (sci->handler) {
+        sci->handler(sci, &status);
     }
 }
 
-/* === Public function implementation ========================================================= */
+void UART0_IRQHandler(void) {
+    SciHandleEvent(USART0);
+}
 
-int main(void) {
-    GpioSetDirection(GPIO5_2, true);
+void UART1_IRQHandler(void) {
+    SciHandleEvent(UART1);
+}
 
-    while (true) {
-        GpioBitToogle(GPIO5_2);
-        delay();
-    }
+void UART2_IRQHandler(void) {
+    SciHandleEvent(USART2);
+}
+
+void UART3_IRQHandler(void) {
+    SciHandleEvent(USART3);
 }
 
 /* === End of documentation ==================================================================== */

@@ -1,5 +1,5 @@
 # Variable with module root foder
-FOLDER = modules/hal
+FOLDER = modules/saio
 
 # Variable with module name
 $(eval NAME = $(call uc,$(subst /,_,$(FOLDER))))
@@ -10,4 +10,4 @@ $(NAME)_INC = $(FOLDER)/inc $(FOLDER)/soc/$(SOC)/src
 # Variable with the list of folders containing source files for the module
 $(NAME)_SRC = $(FOLDER)/src $(FOLDER)/soc/$(SOC)/src
 
-PROJECT_INC += modules/hal/inc modules/hal/soc/$(SOC)/inc
+PROJECT_INC += modules/saio/inc

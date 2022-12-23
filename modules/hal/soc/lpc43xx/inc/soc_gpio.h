@@ -32,8 +32,8 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef HAL_H
-#define HAL_H
+#ifndef SOC_GPIO_H
+#define SOC_GPIO_H
 
 /** \brief Digital inputs/outputs declarations
  **
@@ -44,11 +44,7 @@
 /* === Headers files inclusions ================================================================ */
 
 #include "hal_gpio.h"
-#include "hal_pin.h"
-#include "hal_sci.h"
-#include "soc_gpio.h"
 #include "soc_pin.h"
-#include "soc_sci.h"
 
 /* === Cabecera C++ ============================================================================ */
 
@@ -62,6 +58,65 @@ extern "C" {
 
 /* === Public variable declarations ============================================================ */
 
+extern const hal_gpio_bit_t GPIO0_0;
+extern const hal_gpio_bit_t GPIO0_1;
+extern const hal_gpio_bit_t GPIO0_2;
+extern const hal_gpio_bit_t GPIO0_3;
+extern const hal_gpio_bit_t GPIO0_4;
+extern const hal_gpio_bit_t GPIO0_5;
+extern const hal_gpio_bit_t GPIO0_7;
+extern const hal_gpio_bit_t GPIO0_8;
+extern const hal_gpio_bit_t GPIO0_9;
+extern const hal_gpio_bit_t GPIO0_10;
+extern const hal_gpio_bit_t GPIO0_11;
+extern const hal_gpio_bit_t GPIO0_12;
+extern const hal_gpio_bit_t GPIO0_13;
+extern const hal_gpio_bit_t GPIO0_14;
+extern const hal_gpio_bit_t GPIO0_15;
+
+extern const hal_gpio_bit_t GPIO1_8;
+extern const hal_gpio_bit_t GPIO1_9;
+extern const hal_gpio_bit_t GPIO1_11;
+extern const hal_gpio_bit_t GPIO1_12;
+
+extern const hal_gpio_bit_t GPIO2_0;
+extern const hal_gpio_bit_t GPIO2_1;
+extern const hal_gpio_bit_t GPIO2_2;
+extern const hal_gpio_bit_t GPIO2_3;
+extern const hal_gpio_bit_t GPIO2_4;
+extern const hal_gpio_bit_t GPIO2_5;
+extern const hal_gpio_bit_t GPIO2_6;
+
+extern const hal_gpio_bit_t GPIO3_0;
+extern const hal_gpio_bit_t GPIO3_1;
+extern const hal_gpio_bit_t GPIO3_2;
+extern const hal_gpio_bit_t GPIO3_3;
+extern const hal_gpio_bit_t GPIO3_4;
+extern const hal_gpio_bit_t GPIO3_5;
+extern const hal_gpio_bit_t GPIO3_6;
+extern const hal_gpio_bit_t GPIO3_7;
+extern const hal_gpio_bit_t GPIO3_8;
+extern const hal_gpio_bit_t GPIO3_12;
+extern const hal_gpio_bit_t GPIO3_13;
+extern const hal_gpio_bit_t GPIO3_14;
+extern const hal_gpio_bit_t GPIO3_15;
+
+extern const hal_gpio_bit_t GPIO4_11;
+
+extern const hal_gpio_bit_t GPIO5_0;
+extern const hal_gpio_bit_t GPIO5_1;
+extern const hal_gpio_bit_t GPIO5_2;
+extern const hal_gpio_bit_t GPIO5_3;
+extern const hal_gpio_bit_t GPIO5_4;
+extern const hal_gpio_bit_t GPIO5_8;
+extern const hal_gpio_bit_t GPIO5_9;
+extern const hal_gpio_bit_t GPIO5_12;
+extern const hal_gpio_bit_t GPIO5_13;
+extern const hal_gpio_bit_t GPIO5_14;
+extern const hal_gpio_bit_t GPIO5_15;
+extern const hal_gpio_bit_t GPIO5_16;
+extern const hal_gpio_bit_t GPIO5_18;
+
 /* === Public function declarations ============================================================ */
 
 /* === End of documentation ==================================================================== */
@@ -72,4 +127,4 @@ extern "C" {
 
 /** @} End of module definition for doxygen */
 
-#endif /* HAL_H */
+#endif /* SOC_GPIO_H */

@@ -1,5 +1,5 @@
-/* Copyright 2022, Laboratorio de Microprocesadores 
- * Facultad de Ciencias Exactas y Tecnología 
+/* Copyright 2022, Laboratorio de Microprocesadores
+ * Facultad de Ciencias Exactas y Tecnología
  * Universidad Nacional de Tucuman
  * http://www.microprocesadores.unt.edu.ar/
  * Copyright 2022, Esteban Volentini <evolentini@herrera.unt.edu.ar>
@@ -32,8 +32,8 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef HAL_BOARD_H
-#define HAL_BOARD_H
+#ifndef HAL_PIN_H
+#define HAL_PIN_H
 
 /** \brief Digital inputs/outputs declarations
  **
@@ -43,7 +43,6 @@
 
 /* === Headers files inclusions ================================================================ */
 
-#include <stdint.h>
 #include <stdbool.h>
 
 /* === Cabecera C++ ============================================================================ */
@@ -53,19 +52,30 @@ extern "C" {
 #endif
 
 /* === Public macros definitions =============================================================== */
- 
+
 /* === Public data type declarations =========================================================== */
 
+typedef enum {
+    RESERVED,
+    GPIO,
+    SCI_TX,
+    SCI_RX,
+    SCI_CLK,
+    TIMER_INPUT,
+    TIMER_OUTPUT,
+} hal_pin_function_t;
+
+typedef struct hal_pin_s * const hal_pin_t;
 
 /* === Public variable declarations ============================================================ */
 
 /* === Public function declarations ============================================================ */
 
-bool HalDigitalGetState(uint8_t port, uint8_t pin);
+void PinSetFunction(hal_pin_t pin, hal_pin_function_t function, bool pullup);
 
-void HalDigitalSetState(uint8_t port, uint8_t pin, bool state);
+void PinSetPullUp(hal_pin_t pin, bool enabled);
 
-void HalDigitalToggle(uint8_t port, uint8_t pin);
+void PinSetPullDown(hal_pin_t pin, bool enabled);
 
 /* === End of documentation ==================================================================== */
 
@@ -75,4 +85,4 @@ void HalDigitalToggle(uint8_t port, uint8_t pin);
 
 /** @} End of module definition for doxygen */
 
-#endif   /* TERMINAL_H */
+#endif /* HAL_PIN_H */

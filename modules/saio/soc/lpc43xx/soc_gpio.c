@@ -32,44 +32,49 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef HAL_H
-#define HAL_H
-
-/** \brief Digital inputs/outputs declarations
+/** \brief Digital inputs/outputs definitions
  **
  ** \addtogroup hal HAL
  ** \brief Hardware abstraction layer
  ** @{ */
 
-/* === Headers files inclusions ================================================================ */
+/* === Headers files inclusions =============================================================== */
 
-#include "hal_gpio.h"
-#include "hal_pin.h"
-#include "hal_sci.h"
-#include "soc_gpio.h"
-#include "soc_pin.h"
-#include "soc_sci.h"
+#include "board.h"
+#include "hal_soc.h"
 
-/* === Cabecera C++ ============================================================================ */
+/* === Macros definitions ====================================================================== */
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+/* === Private data type declarations ========================================================== */
 
-/* === Public macros definitions =============================================================== */
+/* === Private variable declarations =========================================================== */
 
-/* === Public data type declarations =========================================================== */
+/* === Private function declarations =========================================================== */
 
-/* === Public variable declarations ============================================================ */
+/* === Public variable definitions ============================================================= */
 
-/* === Public function declarations ============================================================ */
+/* === Private variable definitions ============================================================ */
+
+/* === Private function implementation ========================================================= */
+
+/* === Public function implementation ========================================================= */
+
+void HalBoardInit(void) {
+    BoardInit();
+}
+
+bool HalDigitalGetState(uint8_t port, uint8_t pin) {
+    return Chip_GPIO_ReadPortBit(LPC_GPIO_PORT, port, pin);
+}
+
+void HalDigitalSetState(uint8_t port, uint8_t pin, bool state) {
+    Chip_GPIO_SetPinState(LPC_GPIO_PORT, port, pin, state);
+}
+
+void HalDigitalToggle(uint8_t port, uint8_t pin) {
+    Chip_GPIO_SetPinToggle(LPC_GPIO_PORT, port, pin);
+}
 
 /* === End of documentation ==================================================================== */
 
-#ifdef __cplusplus
-}
-#endif
-
 /** @} End of module definition for doxygen */
-
-#endif /* HAL_H */

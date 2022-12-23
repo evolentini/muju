@@ -32,8 +32,8 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef HAL_H
-#define HAL_H
+#ifndef SOC_PIN_H
+#define SOC_PIN_H
 
 /** \brief Digital inputs/outputs declarations
  **
@@ -43,12 +43,8 @@
 
 /* === Headers files inclusions ================================================================ */
 
-#include "hal_gpio.h"
 #include "hal_pin.h"
-#include "hal_sci.h"
-#include "soc_gpio.h"
-#include "soc_pin.h"
-#include "soc_sci.h"
+#include <stdint.h>
 
 /* === Cabecera C++ ============================================================================ */
 
@@ -62,6 +58,25 @@ extern "C" {
 
 /* === Public variable declarations ============================================================ */
 
+extern const hal_pin_t P1_0;
+extern const hal_pin_t P1_1;
+extern const hal_pin_t P1_2;
+extern const hal_pin_t P1_6;
+extern const hal_pin_t P1_15;
+extern const hal_pin_t P1_16;
+extern const hal_pin_t P1_17;
+
+extern const hal_pin_t P2_0;
+extern const hal_pin_t P2_1;
+extern const hal_pin_t P2_2;
+extern const hal_pin_t P2_10;
+extern const hal_pin_t P2_11;
+extern const hal_pin_t P2_12;
+extern const hal_pin_t P6_4;
+
+extern const hal_pin_t P7_1;
+extern const hal_pin_t P7_2;
+
 /* === Public function declarations ============================================================ */
 
 /* === End of documentation ==================================================================== */
@@ -72,4 +87,4 @@ extern "C" {
 
 /** @} End of module definition for doxygen */
 
-#endif /* HAL_H */
+#endif /* SOC_PIN_H */

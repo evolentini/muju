@@ -32,8 +32,8 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef HAL_H
-#define HAL_H
+#ifndef SOC_SCI_H
+#define SOC_SCI_H
 
 /** \brief Digital inputs/outputs declarations
  **
@@ -43,12 +43,9 @@
 
 /* === Headers files inclusions ================================================================ */
 
-#include "hal_gpio.h"
-#include "hal_pin.h"
 #include "hal_sci.h"
-#include "soc_gpio.h"
-#include "soc_pin.h"
-#include "soc_sci.h"
+#include <stdbool.h>
+#include <stdint.h>
 
 /* === Cabecera C++ ============================================================================ */
 
@@ -59,6 +56,11 @@ extern "C" {
 /* === Public macros definitions =============================================================== */
 
 /* === Public data type declarations =========================================================== */
+
+extern const hal_sci_t USART0;
+extern const hal_sci_t UART1;
+extern const hal_sci_t USART2;
+extern const hal_sci_t USART4;
 
 /* === Public variable declarations ============================================================ */
 
@@ -72,4 +74,4 @@ extern "C" {
 
 /** @} End of module definition for doxygen */
 
-#endif /* HAL_H */
+#endif /* SOC_SCI_H */

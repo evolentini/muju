@@ -1,5 +1,5 @@
-/* Copyright 2022, Laboratorio de Microprocesadores 
- * Facultad de Ciencias Exactas y Tecnología 
+/* Copyright 2022, Laboratorio de Microprocesadores
+ * Facultad de Ciencias Exactas y Tecnología
  * Universidad Nacional de Tucuman
  * http://www.microprocesadores.unt.edu.ar/
  * Copyright 2022, Esteban Volentini <evolentini@herrera.unt.edu.ar>
@@ -32,16 +32,15 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-/** \brief Digital inputs/outputs definitions
+/** \brief Simple sample of use LPC HAL gpio functions
  **
- ** \addtogroup hal HAL
- ** \brief Hardware abstraction layer
+ ** \addtogroup samples Sample projects
+ ** \brief Sample projects to use as a starting point
  ** @{ */
 
 /* === Headers files inclusions =============================================================== */
 
-#include "hal_soc.h"
-#include "board.h"
+#include "saio.h"
 
 /* === Macros definitions ====================================================================== */
 
@@ -51,28 +50,88 @@
 
 /* === Private function declarations =========================================================== */
 
+static void delay(void);
+
 /* === Public variable definitions ============================================================= */
 
 /* === Private variable definitions ============================================================ */
 
 /* === Private function implementation ========================================================= */
 
+static void delay(void) {
+    for (int index = 0; index < 100; index++) {
+        for (int delay = 0; delay < 25000; delay++) {
+            __asm("NOP");
+        }
+    }
+}
+
 /* === Public function implementation ========================================================= */
 
-void HalBoardInit(void) {
-    BoardInit();
-} 
+int main(void) {
+    static const struct digital_output_atributes_s LED_OUTPUT = {
+        .inverted = false,
+        .high_current = false,
+        .open_colector = false,
+    };
 
-bool HalDigitalGetState(uint8_t port, uint8_t pin) {
-    return Chip_GPIO_ReadPortBit(LPC_GPIO_PORT, port, pin);
-}
+    static const struct digital_input_atributes_s BUTTON_INPUT = {
+        .inverted = true,
+        .pullup = true,
+        .pulldown = false,
+    };
 
-void HalDigitalSetState(uint8_t port, uint8_t pin, bool state) {
-    Chip_GPIO_SetPinState(LPC_GPIO_PORT, port, pin, state);
-}
+    int divisor = 0;
 
-void HalDigitalToggle(uint8_t port, uint8_t pin) {
-    Chip_GPIO_SetPinToggle(LPC_GPIO_PORT, port, pin);
+    // digital_output_t led_rgb_r;
+    // digital_output_t led_rgb_g;
+    digital_output_t led_rgb_b;
+    digital_output_t led_red;
+    digital_output_t led_yellow;
+    digital_output_t led_green;
+
+    digital_input_t tec_1;
+    digital_input_t tec_2;
+    digital_input_t tec_3;
+    digital_input_t tec_4;
+
+    // led_rgb_r = DigitalOutputCreate(GPIO5_0, &LED_OUTPUT);
+    // led_rgb_g = DigitalOutputCreate(GPIO5_1, &LED_OUTPUT);
+    led_rgb_b = DigitalOutputCreate(GPIO5_2, &LED_OUTPUT);
+    led_red = DigitalOutputCreate(GPIO0_14, &LED_OUTPUT);
+    led_yellow = DigitalOutputCreate(GPIO1_11, &LED_OUTPUT);
+    led_green = DigitalOutputCreate(GPIO1_12, &LED_OUTPUT);
+
+    tec_1 = DigitalInputCreate(GPIO0_4, &BUTTON_INPUT);
+    tec_2 = DigitalInputCreate(GPIO0_8, &BUTTON_INPUT);
+    tec_3 = DigitalInputCreate(GPIO0_9, &BUTTON_INPUT);
+    tec_4 = DigitalInputCreate(GPIO1_9, &BUTTON_INPUT);
+
+    while (true) {
+        if (DigitalInputGetState(tec_1)) {
+            DigitalOutputActivate(led_rgb_b);
+        } else {
+            DigitalOutputDeactivate(led_rgb_b);
+        }
+
+        if (DigitalInputHasActivated(tec_2)) {
+            DigitalOutputToggle(led_red);
+        }
+
+        if (DigitalInputGetState(tec_3)) {
+            DigitalOutputActivate(led_yellow);
+        }
+        if (DigitalInputGetState(tec_4)) {
+            DigitalOutputDeactivate(led_yellow);
+        }
+
+        divisor++;
+        if (divisor == 5) {
+            divisor = 0;
+            DigitalOutputToggle(led_green);
+        }
+        delay();
+    }
 }
 
 /* === End of documentation ==================================================================== */

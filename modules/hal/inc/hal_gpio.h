@@ -32,8 +32,8 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef HAL_H
-#define HAL_H
+#ifndef HAL_GPIO_H
+#define HAL_GPIO_H
 
 /** \brief Digital inputs/outputs declarations
  **
@@ -43,12 +43,9 @@
 
 /* === Headers files inclusions ================================================================ */
 
-#include "hal_gpio.h"
 #include "hal_pin.h"
-#include "hal_sci.h"
-#include "soc_gpio.h"
-#include "soc_pin.h"
-#include "soc_sci.h"
+#include <stdbool.h>
+#include <stdint.h>
 
 /* === Cabecera C++ ============================================================================ */
 
@@ -60,9 +57,23 @@ extern "C" {
 
 /* === Public data type declarations =========================================================== */
 
+typedef struct hal_gpio_bit_s * const hal_gpio_bit_t;
+
 /* === Public variable declarations ============================================================ */
 
 /* === Public function declarations ============================================================ */
+
+void GpioSetDirection(hal_gpio_bit_t gpio, bool otuput);
+
+bool GpioGetState(hal_gpio_bit_t gpio);
+
+void GpioSetState(hal_gpio_bit_t gpio, bool state);
+
+void GpioBitSet(hal_gpio_bit_t gpio);
+
+void GpioBitClear(hal_gpio_bit_t gpio);
+
+void GpioBitToogle(hal_gpio_bit_t gpio);
 
 /* === End of documentation ==================================================================== */
 
@@ -72,4 +83,4 @@ extern "C" {
 
 /** @} End of module definition for doxygen */
 
-#endif /* HAL_H */
+#endif /* HAL_GPIO_H */
